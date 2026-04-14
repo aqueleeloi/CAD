@@ -267,9 +267,24 @@
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const base64Image = e.target.result;
-                    const promptText = "Objetivo: Agir como um assistente de engenharia avançado para converter fotografias de instalações industriais ou equipamentos, que incluam uma pessoa de 1,80m como referência de escala, em um conjunto completo e padronizado de desenhos de documentação técnica ortográfica. O resultado final deve ser renderizado num layout de grade 2x2 exato, como mostrado na imagem de referência. Passo 1: Análise e Escala da Imagem/instalação. Identificação de Escala: Primeiro, identifique a pessoa de 1,80m na imagem de origem como a referência de escala absoluta. Cálculo Proporcional: Usando a proporção da pessoa, calcule as dimensões reais (comprimento, largura, altura, diâmetros, espessuras de parede) de todo equipamento ou estrutura que está sendo documentado. Todas as medidas geradas devem ser proporcionais a essa referência humana. Passo 2: Geração de Layout e Vistas (Layout 2x2). Crie uma renderização de desenho técnico em alta definição com um fundo branco limpo. O layout deve conter as seguintes quatro vistas dispostas em uma grade 2x2, exatamente como na estrutura de referência: Quadrante Superior Direito (Vista Isométrica): Uma vista isométrica 3D limpa e renderizada do equipamento completo e realista, fotorealismo. Quadrante Superior Esquerdo (Vista Superior com Cotas): Uma vista superior (planta) completa do equipamento. Esta vista deve incluir todas as linhas de cota, setas e números calculados proporcionalmente. Incluir linhas de centro e a etiqueta da vista 'VISTA SUPERIOR'. Quadrante Inferior Esquerdo (Vista Lateral em Corte A-A): Uma vista lateral que foi cortada ao longo da linha A-A. Deve incluir: Hachuras de corte de metal técnico padrão nas superfícies cortadas. Linha de corte e setas A-A claramente marcadas. Cotas calculadas para espessura de parede, altura, profundidade do corte (como 12.7, etc.) e diâmetros dos furos cortados com o símbolo Ø (por exemplo, Ø12.7). Incluir a etiqueta 'CORTE A-A'. Quadrante Inferior Direito (Vista Frontal com Cotas): Uma vista frontal completa do equipamento. Deve incluir todas as linhas de cota de altura e distâncias entre centros (como 25.4, 88.9, etc.). Incluir linhas de centro e a etiqueta 'VISTA FRONTAL'. Requisitos Adicionais: Medidas em: centimetros. Padronização de Cotas: Todas as linhas de cota, setas e texto devem ser claros, nítidos e consistentes com os padrões profissionais de desenho de engenharia. Os números de cota calculados devem ser colocados em posições correspondentes às da referência. Símbolos: Use o símbolo de diâmetro (Ø) para todos os furos redondos. Use linhas de centro (ponto-e-traço) onde aplicável. Formato de Saída: Gerar uma única imagem composta em alta resolução do layout de desenho técnico 2 em cima e 2 em baixo, desenho completo. Certifique-se de que todo o texto e cotas sejam legíveis e que o estilo seja um desenho estilo CAD limpo e profissional! CRIA A IMAGEM!";
+                    const promptText = `Age como um engenheiro e designer técnico de elite. 
+Objetivo: Converter a FOTO ANEXADA (que pode conter esculturas, mobiliário, equipamentos ou estruturas) num conjunto completo de desenhos técnicos ortográficos (Blueprints/CAD).
 
-                    // Na implementação final local com OpenClaw, este fetch faz o bypass para o Jarvas:
+ESTRUTURA DA RESPOSTA:
+Deves gerar uma única imagem composta num layout de grade 2x2 exato:
+1. Quadrante Superior Esquerdo (VISTA SUPERIOR): Planta detalhada com linhas de cota (centímetros).
+2. Quadrante Superior Direito (VISTA ISOMÉTRICA): Representação 3D fotorrealista do objeto da foto original, mantendo fielmente a sua forma, cores e texturas.
+3. Quadrante Inferior Esquerdo (CORTE LATERAL/DETALHE): Vista de perfil ou corte técnico mostrando a estrutura interna ou espessuras.
+4. Quadrante Inferior Direito (VISTA FRONTAL): Elevação frontal com cotas de altura e largura totais.
+
+REGRAS CRÍTICAS:
+- FIDELIDADE: O desenho técnico tem de ser EXATAMENTE do objeto na foto (ex: se forem coelhos e ovos, desenha coelhos e ovos; se for um tanque, desenha um tanque). Não inventes estruturas metálicas genéricas.
+- ESCALA: Usa a pessoa de 1.80m (ou referência humana) na foto para calcular todas as dimensões reais em centímetros.
+- ESTILO: Desenho estilo CAD limpo, fundo branco, linhas pretas nítidas, texto legível.
+- SEM TEXTO EXTRA: Apenas as etiquetas das vistas ('VISTA SUPERIOR', 'VISTA FRONTAL', etc.).
+
+CRIA A IMAGEM AGORA BASEADA NA FOTO FORNECIDA.`;
+
                     try {
                         const response = await fetch('http://localhost:18789/api/agent/prompt', {
                             method: 'POST',
@@ -282,21 +297,20 @@
                         
                         if(response.ok) {
                             const data = await response.json();
-                            // Se a API retornar a imagem gerada
                             overlay.classList.add('hidden');
-                            resultImg.src = data.imageUrl || 'vistas.jpg'; // fallback para demo
+                            resultImg.src = data.imageUrl; 
                             resultImg.classList.remove('hidden');
                         } else {
-                            throw new Error("API não disponível");
+                            throw new Error("Erro na geração");
                         }
                     } catch(err) {
-                        // Fallback de demonstração visual se a API não estiver ligada
-                        setTimeout(() => {
-                            overlay.classList.add('hidden');
-                            // Em modo demo mostra a imagem que estava na pasta
-                            resultImg.src = 'vistas.jpg'; 
-                            resultImg.classList.remove('hidden');
-                        }, 3000);
+                        content.innerHTML = `
+                            <div class="flex flex-col items-center gap-4 text-red-600">
+                                <div class="text-2xl">⚠️</div>
+                                <div class="font-bold text-sm text-center">ERRO NA LIGAÇÃO À AI.<br>Verifica se o OpenClaw está a correr.</div>
+                                <button onclick="location.reload()" class="text-xs underline text-gray-500">Tentar novamente</button>
+                            </div>
+                        `;
                     }
                 };
                 reader.readAsDataURL(file);
