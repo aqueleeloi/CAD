@@ -288,7 +288,10 @@ CRIA A IMAGEM AGORA BASEADA NA FOTO FORNECIDA.`;
                     try {
                         const response = await fetch('http://localhost:18789/api/agent/prompt', {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer beea43f799c784b449b7ea467b9a8919e0b7f736ce94ea54'
+                            },
                             body: JSON.stringify({
                                 image: base64Image,
                                 prompt: promptText
