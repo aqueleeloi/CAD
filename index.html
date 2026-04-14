@@ -108,12 +108,10 @@
                 uploadZone.innerHTML = '<div class="animate-spin text-5xl mb-4">⚙</div><p class="font-bold">AI JARVAS A ANALISAR E GERAR VISTAS...</p>';
                 
                 setTimeout(() => {
-                    // Aqui na versão real o OpenClaw substituiria o src
-                    // Por agora, vou mostrar a imagem que gerei
-                    resultImage.src = "https://via.placeholder.com/800x600?text=Vistas+Tecnicas+Geradas+por+Jarvas";
+                    resultImage.src = "vistas.jpg";
                     resultImage.classList.remove('hidden');
                     uploadZone.classList.add('hidden');
-                }, 3000);
+                }, 1500);
             }
         };
     </script>
