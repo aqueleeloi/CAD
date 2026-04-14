@@ -3,117 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PESSA - Plataforma de Orçamentos</title>
+    <title>PESSA - CAD & Quotes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .sheet { width: 1000px; height: 700px; background: white; margin: 20px auto; padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto 1fr auto; gap: 15px; border: 1px solid #d1d5db; }
-        .header-section { grid-column: 1 / 2; background: #e5e7eb; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .main-views { grid-column: 1 / 2; grid-row: 2 / 3; border: 2px dashed #9ca3af; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; position: relative; }
-        .view-label { font-size: 10px; font-weight: bold; color: #4b5563; position: absolute; padding: 5px; }
-        .sidebar { grid-column: 2 / 3; grid-row: 1 / 4; display: flex; flex-direction: column; gap: 15px; }
-        .bottom-section { grid-column: 1 / 2; background: #e5e7eb; padding: 10px; border-radius: 4px; }
-        .card { border: 1px solid #d1d5db; border-radius: 4px; padding: 10px; }
-        .card-title { background: #9ca3af; color: white; padding: 2px 8px; font-size: 12px; font-weight: bold; margin: -10px -10px 10px -10px; border-radius: 4px 4px 0 0; display: flex; justify-content: space-between; }
-        .placeholder-btn { border: 2px dashed #d1d5db; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; color: #9ca3af; transition: all 0.2s; }
-        .placeholder-btn:hover { background: #f9fafb; color: #4b5563; border-color: #9ca3af; }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; padding: 20px; }
+        
+        .sheet-container {
+            width: 1200px;
+            height: 850px;
+            background: white;
+            margin: 0 auto;
+            border: 2px solid #000;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 10px;
+        }
+
+        .drawing-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            border: 1px solid #000;
+            position: relative;
+        }
+
+        .quadrant {
+            border: 0.5px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .quadrant-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 4px;
+            z-index: 10;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-card {
+            border: 1px solid #000;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .card-header {
+            background: #000;
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-box {
+            background: #000;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .logo-box .brand { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+        .logo-box .sub { font-size: 8px; letter-spacing: 2px; }
+
+        .btn-plus {
+            width: 100%;
+            height: 100%;
+            border: 1px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #999;
+            font-size: 20px;
+        }
+        .btn-plus:hover { background: #f0f0f0; color: #333; }
+
+        .editable-field { outline: none; border-bottom: 1px transparent dotted; }
+        .editable-field:hover { border-bottom: 1px solid #000; }
+        
+        #overlay-ai {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .hidden { display: none !important; }
+        
+        .c-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; flex: 1; }
+        
+        .footer-area {
+            height: 80px;
+            border: 1px solid #000;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        [contenteditable]:empty:before {
+            content: attr(placeholder);
+            color: #ccc;
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <div class="sheet" id="platform">
-        <!-- 1. Vistas Cotadas -->
-        <div class="header-section">
-            <h1 class="text-sm font-bold uppercase">1. Vistas Cotadas (Dimensões Principais)</h1>
-            <button class="text-gray-500">✎</button>
-        </div>
 
-        <div class="main-views" id="mainViews">
-            <div class="view-label top-0 left-0">VISTA REALISTA ISOMETRICA</div>
-            <div class="view-label top-0 right-0">VISTA DE CIMA</div>
-            <div class="view-label bottom-0 left-0">VISTA DE LADO</div>
-            <div class="view-label bottom-0 right-0">VISTA DE FRENTE</div>
-            
-            <div class="col-span-2 row-span-2 flex flex-col justify-center items-center p-10 text-center" id="uploadZone">
-                <div class="text-5xl mb-4">⊕</div>
-                <p class="font-bold text-gray-700">UPLOAD E ANALISE AI GOOGLE PARA CRIAR AS VISTAS E MEDIDAS</p>
-                <input type="file" id="fileInput" class="hidden" accept="image/*">
+    <div class="sheet-container">
+        <!-- AI START OVERLAY -->
+        <div id="overlay-ai">
+            <div class="mb-6">
+                <div class="text-6xl mb-4">🤖</div>
+                <h2 class="text-2xl font-bold mb-2">PESSA CAD GENERATOR</h2>
+                <p class="text-gray-600 max-w-md mx-auto">Insere a tua fotografia com escala (1.80m) para gerar as vistas automáticas.</p>
             </div>
-            <img id="resultImage" class="hidden w-full h-full object-contain col-span-2 row-span-2">
-        </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="flex justify-between items-start">
-                <div class="bg-black text-white p-2 text-center leading-tight">
-                    <div class="text-xs">ESTUDIO</div>
-                    <div class="font-bold text-lg tracking-tighter">PESSA</div>
-                    <div class="text-[8px]">ATELIER CRIATIVO</div>
-                </div>
-                <div class="text-[10px] text-right">
-                    <div class="font-bold">FICHA TECNICA: <span contenteditable="true">(ADICIONAR NOME)</span></div>
-                    <div contenteditable="true">⊘(ADICIONAR NOME)</div>
-                    <div contenteditable="true">⊘(ADICIONAR DESCRIÇÃO)</div>
-                </div>
-            </div>
-
-            <div class="card flex-1">
-                <div class="card-title">2. Detalhes Construtivos. <span>✎</span></div>
-                <div class="grid grid-cols-2 gap-2 h-full">
-                    <div class="placeholder-btn"><span>⊕</span> IMAGEM</div>
-                    <div class="placeholder-btn"><span>⊕</span> SECÇÃO</div>
-                    <div class="placeholder-btn col-span-2"><span>⊕</span> TEXTO</div>
-                </div>
-            </div>
-
-            <div class="card flex-1">
-                <div class="card-title">3. Lista de Materiais e Acabamentos. <span>✎</span></div>
-                <div class="space-y-2">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 border-2 border-dashed p-2"><span>⊕</span> ICON <span>⊕</span> TEXTO</div>
-                    <div class="text-center text-xs text-gray-400 border-2 border-dashed p-2"><span>⊕</span> SECÇÃO</div>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <div class="border p-1 text-[8px] vertical-lr rotate-180 h-24 flex items-center justify-center bg-gray-100">Paleta de Cores</div>
-                <div class="flex-1 border p-2 flex flex-col items-center justify-center text-[10px]">
-                    <div class="text-2xl text-gray-300">⊕</div>
-                    <div class="font-bold">COR</div>
-                    <div class="text-gray-400 italic">Cores Pastel Variadas</div>
-                </div>
+            <textarea id="ai-prompt" class="w-full max-w-xl h-32 p-4 border mb-4 font-mono text-xs" readonly>Objetivo: Agir como um assistente de engenharia avançado... (A tua prompt está carregada)</textarea>
+            <div class="flex gap-4">
+                <button onclick="simulateAI()" class="bg-black text-white px-8 py-3 font-bold hover:bg-gray-800 transition">GERAR VISTAS (CAD AI)</button>
+                <input type="file" id="image-upload" class="hidden">
             </div>
         </div>
 
-        <!-- 4. Detalhes -->
-        <div class="bottom-section card">
-            <div class="card-title">4. DETALHES GERAIS <span>✎</span></div>
-            <div class="flex justify-around items-center h-full">
-                <div class="placeholder-btn px-4"><span>⊕</span> ICON <span>⊕</span> TEXTO</div>
-                <div class="placeholder-btn px-4 text-xs"><span>⊕</span> SECÇÃO</div>
+        <!-- HEADER / TITLE AREA -->
+        <div class="mb-2 flex justify-between items-end border-b-2 border-black pb-1">
+            <div class="text-xs font-bold">1. VISTAS COTADAS (DIMENSÕES PRINCIPAIS)</div>
+            <div class="text-[10px] uppercase">Projeto: <span class="editable-field" contenteditable="true" placeholder="Nome do Projeto">ESTRUTURA METÁLICA</span></div>
+        </div>
+
+        <div class="main-content">
+            <!-- 2x2 DRAWING AREA -->
+            <div class="drawing-area" id="cad-grid">
+                <div class="quadrant">
+                    <span class="quadrant-label">VISTA SUPERIOR</span>
+                    <img id="img-superior" class="w-full h-full object-contain p-4 hidden">
+                    <div class="btn-plus">⊕</div>
+                </div>
+                <div class="quadrant">
+                    <span class="quadrant-label">VISTA ISOMÉTRICA</span>
+                    <img id="img-isom" class="w-full h-full object-contain p-4 hidden">
+                    <div class="btn-plus">⊕</div>
+                </div>
+                <div class="quadrant">
+                    <span class="quadrant-label">CORTE A-A</span>
+                    <img id="img-corte" class="w-full h-full object-contain p-4 hidden">
+                    <div class="btn-plus">⊕</div>
+                </div>
+                <div class="quadrant">
+                    <span class="quadrant-label">VISTA FRONTAL</span>
+                    <img id="img-frontal" class="w-full h-full object-contain p-4 hidden">
+                    <div class="btn-plus">⊕</div>
+                </div>
+                
+                <!-- FULL IMAGE OVERLAY (When AI triggers) -->
+                <img id="full-render" class="absolute inset-0 w-full h-full object-contain bg-white hidden z-20">
             </div>
+
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <!-- Brand -->
+                <div class="logo-box">
+                    <div class="brand">PESSA</div>
+                    <div class="sub">ATELIER CRIATIVO</div>
+                </div>
+
+                <!-- Technical Sheet -->
+                <div class="info-card">
+                    <div class="card-header">FICHA TÉCNICA <span class="cursor-pointer">✎</span></div>
+                    <div class="text-[10px] space-y-1">
+                        <div><b>REF:</b> <span class="editable-field" contenteditable="true">PS-2024-001</span></div>
+                        <div><b>DATA:</b> <span class="editable-field" contenteditable="true">14/04/2026</span></div>
+                        <div><b>ESCALA:</b> <span class="editable-field" contenteditable="true">1:20 (REF 1.80m)</span></div>
+                        <div><b>AUTOR:</b> <span class="editable-field" contenteditable="true">Elói</span></div>
+                    </div>
+                </div>
+
+                <!-- Detalhes Construtivos -->
+                <div class="info-card flex-1">
+                    <div class="card-header">2. DETALHES CONSTRUTIVOS <span class="cursor-pointer">✎</span></div>
+                    <div class="c-grid">
+                        <div class="btn-plus">⊕</div>
+                        <div class="btn-plus">⊕</div>
+                        <div class="btn-plus col-span-2 text-xs" contenteditable="true" placeholder="Adicionar notas técnicas..."></div>
+                    </div>
+                </div>
+
+                <!-- Materials -->
+                <div class="info-card flex-1">
+                    <div class="card-header">3. LISTA DE MATERIAIS <span class="cursor-pointer">✎</span></div>
+                    <div class="text-[9px] space-y-2" contenteditable="true">
+                        <div class="flex items-center gap-1 border-b pb-1">🔲 Perfil Aço Inox 40x40mm</div>
+                        <div class="flex items-center gap-1 border-b pb-1">🔲 Chapa 5mm Zincada</div>
+                        <div class="flex items-center gap-1 border-b pb-1">🔲 Parafusos M12 Auto-roscantes</div>
+                    </div>
+                    <div class="btn-plus h-8 mt-2">⊕</div>
+                </div>
+
+                <!-- Color Palette -->
+                <div class="flex border border-black p-2 gap-2 h-20 items-center">
+                    <div class="text-[8px] font-bold border-r pr-2 h-full flex items-center" style="writing-mode: vertical-rl; transform: rotate(180deg);">PALETA</div>
+                    <div class="flex-1 h-full flex gap-1">
+                        <div class="flex-1 bg-gray-200 border border-gray-300"></div>
+                        <div class="flex-1 bg-gray-400 border border-gray-300"></div>
+                        <div class="flex-1 bg-yellow-100 border border-gray-300"></div>
+                        <div class="btn-plus flex-1 text-xs">⊕</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER AREA -->
+        <div class="footer-area">
+            <div class="flex items-center gap-2 border-r pr-10 h-full">
+                <div class="text-[20px]">🛠</div>
+                <div class="text-[10px] font-bold">DETALHES<br>GERAIS</div>
+            </div>
+            <div class="flex-1 px-4 text-[10px] italic text-gray-400" contenteditable="true" placeholder="Clique aqui para adicionar observações gerais sobre a montagem ou transporte..."></div>
+            <div class="bg-black text-white px-6 h-full flex items-center font-bold text-xs cursor-pointer hover:bg-gray-800">EXPORTAR PDF</div>
         </div>
     </div>
 
     <script>
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        const resultImage = document.getElementById('resultImage');
+        function simulateAI() {
+            const overlay = document.getElementById('overlay-ai');
+            const fullRender = document.getElementById('full-render');
+            
+            overlay.innerHTML = `
+                <div class="animate-bounce text-6xl mb-4">🚀</div>
+                <h2 class="text-2xl font-bold mb-2">JARVAS AI A PROCESSAR...</h2>
+                <p class="text-gray-600">Calculando escala baseada em 1.80m...<br>Gerando vistas CAD 2x2...</p>
+            `;
 
-        uploadZone.onclick = () => fileInput.click();
-
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                // Simulação de processamento
-                uploadZone.innerHTML = '<div class="animate-spin text-5xl mb-4">⚙</div><p class="font-bold">AI JARVAS A ANALISAR E GERAR VISTAS...</p>';
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                fullRender.src = 'vistas.jpg';
+                fullRender.classList.remove('hidden');
                 
-                setTimeout(() => {
-                    resultImage.src = "vistas.jpg";
-                    resultImage.classList.remove('hidden');
-                    uploadZone.classList.add('hidden');
-                }, 1500);
-            }
-        };
+                // Opção para fechar o render e ver a grelha por baixo
+                fullRender.title = "Clique para fechar o overlay e editar os campos";
+                fullRender.onclick = () => {
+                    if(confirm("Deseja fechar o render para editar a ficha técnica?")) {
+                        fullRender.classList.add('hidden');
+                    }
+                };
+            }, 2500);
+        }
+
+        // Tornar todos os botões "plus" funcionais com um alerta simples
+        document.querySelectorAll('.btn-plus').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(!btn.hasAttribute('contenteditable')) {
+                    const type = prompt("Tipo de elemento a inserir (Imagem/Texto/Simbolo):", "Imagem");
+                    if(type) alert("Jarvas: Função '" + type + "' será implementada na integração com o sistema de ficheiros.");
+                }
+            });
+        });
     </script>
 </body>
 </html>
