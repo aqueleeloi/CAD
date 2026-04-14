@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PESSA - Plataforma de Orçamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .sheet { width: 1000px; height: 700px; background: white; margin: 20px auto; padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto 1fr auto; gap: 15px; border: 1px solid #d1d5db; }
+        .header-section { grid-column: 1 / 2; background: #e5e7eb; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .main-views { grid-column: 1 / 2; grid-row: 2 / 3; border: 2px dashed #9ca3af; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; position: relative; }
+        .view-label { font-size: 10px; font-weight: bold; color: #4b5563; position: absolute; padding: 5px; }
+        .sidebar { grid-column: 2 / 3; grid-row: 1 / 4; display: flex; flex-direction: column; gap: 15px; }
+        .bottom-section { grid-column: 1 / 2; background: #e5e7eb; padding: 10px; border-radius: 4px; }
+        .card { border: 1px solid #d1d5db; border-radius: 4px; padding: 10px; }
+        .card-title { background: #9ca3af; color: white; padding: 2px 8px; font-size: 12px; font-weight: bold; margin: -10px -10px 10px -10px; border-radius: 4px 4px 0 0; display: flex; justify-content: space-between; }
+        .placeholder-btn { border: 2px dashed #d1d5db; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; color: #9ca3af; transition: all 0.2s; }
+        .placeholder-btn:hover { background: #f9fafb; color: #4b5563; border-color: #9ca3af; }
+    </style>
+</head>
+<body>
+    <div class="sheet" id="platform">
+        <!-- 1. Vistas Cotadas -->
+        <div class="header-section">
+            <h1 class="text-sm font-bold uppercase">1. Vistas Cotadas (Dimensões Principais)</h1>
+            <button class="text-gray-500">✎</button>
+        </div>
+
+        <div class="main-views" id="mainViews">
+            <div class="view-label top-0 left-0">VISTA REALISTA ISOMETRICA</div>
+            <div class="view-label top-0 right-0">VISTA DE CIMA</div>
+            <div class="view-label bottom-0 left-0">VISTA DE LADO</div>
+            <div class="view-label bottom-0 right-0">VISTA DE FRENTE</div>
+            
+            <div class="col-span-2 row-span-2 flex flex-col justify-center items-center p-10 text-center" id="uploadZone">
+                <div class="text-5xl mb-4">⊕</div>
+                <p class="font-bold text-gray-700">UPLOAD E ANALISE AI GOOGLE PARA CRIAR AS VISTAS E MEDIDAS</p>
+                <input type="file" id="fileInput" class="hidden" accept="image/*">
+            </div>
+            <img id="resultImage" class="hidden w-full h-full object-contain col-span-2 row-span-2">
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="flex justify-between items-start">
+                <div class="bg-black text-white p-2 text-center leading-tight">
+                    <div class="text-xs">ESTUDIO</div>
+                    <div class="font-bold text-lg tracking-tighter">PESSA</div>
+                    <div class="text-[8px]">ATELIER CRIATIVO</div>
+                </div>
+                <div class="text-[10px] text-right">
+                    <div class="font-bold">FICHA TECNICA: <span contenteditable="true">(ADICIONAR NOME)</span></div>
+                    <div contenteditable="true">⊘(ADICIONAR NOME)</div>
+                    <div contenteditable="true">⊘(ADICIONAR DESCRIÇÃO)</div>
+                </div>
+            </div>
+
+            <div class="card flex-1">
+                <div class="card-title">2. Detalhes Construtivos. <span>✎</span></div>
+                <div class="grid grid-cols-2 gap-2 h-full">
+                    <div class="placeholder-btn"><span>⊕</span> IMAGEM</div>
+                    <div class="placeholder-btn"><span>⊕</span> SECÇÃO</div>
+                    <div class="placeholder-btn col-span-2"><span>⊕</span> TEXTO</div>
+                </div>
+            </div>
+
+            <div class="card flex-1">
+                <div class="card-title">3. Lista de Materiais e Acabamentos. <span>✎</span></div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 border-2 border-dashed p-2"><span>⊕</span> ICON <span>⊕</span> TEXTO</div>
+                    <div class="text-center text-xs text-gray-400 border-2 border-dashed p-2"><span>⊕</span> SECÇÃO</div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <div class="border p-1 text-[8px] vertical-lr rotate-180 h-24 flex items-center justify-center bg-gray-100">Paleta de Cores</div>
+                <div class="flex-1 border p-2 flex flex-col items-center justify-center text-[10px]">
+                    <div class="text-2xl text-gray-300">⊕</div>
+                    <div class="font-bold">COR</div>
+                    <div class="text-gray-400 italic">Cores Pastel Variadas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Detalhes -->
+        <div class="bottom-section card">
+            <div class="card-title">4. DETALHES GERAIS <span>✎</span></div>
+            <div class="flex justify-around items-center h-full">
+                <div class="placeholder-btn px-4"><span>⊕</span> ICON <span>⊕</span> TEXTO</div>
+                <div class="placeholder-btn px-4 text-xs"><span>⊕</span> SECÇÃO</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const resultImage = document.getElementById('resultImage');
+
+        uploadZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Simulação de processamento
+                uploadZone.innerHTML = '<div class="animate-spin text-5xl mb-4">⚙</div><p class="font-bold">AI JARVAS A ANALISAR E GERAR VISTAS...</p>';
+                
+                setTimeout(() => {
+                    // Aqui na versão real o OpenClaw substituiria o src
+                    // Por agora, vou mostrar a imagem que gerei
+                    resultImage.src = "https://via.placeholder.com/800x600?text=Vistas+Tecnicas+Geradas+por+Jarvas";
+                    resultImage.classList.remove('hidden');
+                    uploadZone.classList.add('hidden');
+                }, 3000);
+            }
+        };
+    </script>
+</body>
+</html>
