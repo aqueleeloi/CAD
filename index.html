@@ -35,6 +35,7 @@
             flex-direction: column;
             background: #fff;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .grid-lines {
@@ -67,7 +68,6 @@
             align-items: center;
             justify-content: center;
             z-index: 20;
-            cursor: pointer;
             background: rgba(255,255,255,0.8);
             transition: background 0.3s;
         }
@@ -187,7 +187,7 @@
                 <div class="upload-overlay" id="upload-overlay">
                     <div class="upload-content" id="upload-content">
                         <div class="upload-icon">+</div>
-                        <div class="upload-text">CLIQUE PARA UPLOAD DA FOTO</div>
+                        <div class="upload-text text-center">CLIQUE PARA UPLOAD DA FOTO</div>
                         <button onclick="event.stopPropagation(); testConnection()" class="text-[10px] text-blue-500 underline mt-4">TESTAR LIGAÇÃO AO JARVAS</button>
                     </div>
                 </div>
@@ -283,21 +283,7 @@
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const base64Image = e.target.result;
-                    const promptText = `Age como um engenheiro e designer técnico de elite. 
-Objetivo: Converter a FOTO ANEXADA num conjunto completo de desenhos técnicos ortográficos (Blueprints/CAD).
-
-ESTRUTURA DA RESPOSTA:
-Gera uma única imagem composta num layout de grade 2x2:
-1. Quadrante Superior Esquerdo: VISTA SUPERIOR (Planta com cotas).
-2. Quadrante Superior Direito: VISTA ISOMÉTRICA (3D realista).
-3. Quadrante Inferior Esquerdo: CORTE LATERAL.
-4. Quadrante Inferior Direito: VISTA FRONTAL (Elevação com cotas).
-
-REGRAS:
-- FIDELIDADE TOTAL ao objeto da foto.
-- Usa a pessoa de 1.80m como referência de escala.
-- Medidas em centímetros.
-- Estilo CAD limpo, fundo branco.`;
+                    const promptText = "Converter foto em desenho técnico CAD 2x2 com cotas em centímetros baseadas na pessoa de 1.80m.";
 
                     const endpoints = ['http://127.0.0.1:18790/generate', 'http://localhost:18790/generate'];
                     let success = false;
@@ -326,7 +312,7 @@ REGRAS:
                             <div class="flex flex-col items-center gap-4 text-red-600 p-4">
                                 <div class="text-2xl">⚠️</div>
                                 <div class="font-bold text-sm text-center text-red-600">ERRO NA LIGAÇÃO À AI.</div>
-                                <div class="text-[10px] text-gray-500 text-center">Usa: http://localhost:8080</div>
+                                <div class="text-[10px] text-gray-500 text-center text-red-600">Verifica se o OpenClaw está a correr.</div>
                                 <button onclick="location.reload()" class="text-xs underline text-gray-500">Tentar novamente</button>
                             </div>
                         `;
@@ -343,6 +329,17 @@ REGRAS:
             item.innerHTML = `
                 <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
                 <span class="editable-field flex-1" contenteditable="true" placeholder="Descrição do material..."></span>
+            `;
+            list.appendChild(item);
+        }
+        
+        function addDetail() {
+            const list = document.getElementById('details-list');
+            const item = document.createElement('div');
+            item.className = "flex gap-2 items-start group";
+            item.innerHTML = `
+                <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
+                <span class="editable-field flex-1" contenteditable="true" placeholder="Detalhe..."></span>
             `;
             list.appendChild(item);
         }
