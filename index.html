@@ -183,10 +183,13 @@
                     <div class="label-br">VISTA DE FRENTE</div>
                 </div>
 
-                <div class="upload-overlay" id="upload-overlay" onclick="document.getElementById('file-input').click()">
+                <div class="upload-overlay" id="upload-overlay">
                     <div class="upload-content" id="upload-content">
-                        <div class="upload-icon">+</div>
-                        <div class="upload-text">UPLOAD E ANALISE AI GOOGLE PARA CRIAR AS VISTAS E MEDIDAS</div>
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="upload-icon" onclick="document.getElementById('file-input').click()">+</div>
+                            <div class="upload-text text-center">UPLOAD E ANALISE AI</div>
+                            <button onclick="testConnection()" class="text-[10px] text-blue-500 underline mt-4">TESTAR LIGAÇÃO AO JARVAS</button>
+                        </div>
                     </div>
                 </div>
 
@@ -249,6 +252,26 @@
     </div>
 
     <script>
+        async function testConnection() {
+            const status = document.createElement('div');
+            status.className = "text-[10px] mt-2 font-mono";
+            document.getElementById('upload-content').appendChild(status);
+            
+            status.innerText = "A testar 127.0.0.1:18790...";
+            try {
+                const r = await fetch('http://127.0.0.1:18790/ping');
+                if(r.ok) { status.innerText = "✅ Ligado ao Jarvas!"; return; }
+            } catch(e) {}
+            
+            status.innerText = "A testar localhost:18790...";
+            try {
+                const r = await fetch('http://localhost:18790/ping');
+                if(r.ok) { status.innerText = "✅ Ligado ao Jarvas!"; return; }
+            } catch(e) {}
+
+            status.innerHTML = "❌ Erro. Garante que permitiste 'Conteúdo Inseguro' no cadeado do browser.";
+        }
+
         function handleUpload(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -256,7 +279,6 @@
                 const overlay = document.getElementById('upload-overlay');
                 const resultImg = document.getElementById('result-image');
 
-                // Mostrar Loading
                 content.innerHTML = `
                     <div class="flex flex-col items-center gap-4">
                         <div class="loading-spinner"></div>
@@ -278,43 +300,53 @@ Deves gerar uma única imagem composta num layout de grade 2x2 exato:
 4. Quadrante Inferior Direito (VISTA FRONTAL): Elevação frontal com cotas de altura e largura totais.
 
 REGRAS CRÍTICAS:
-- FIDELIDADE: O desenho técnico tem de ser EXATAMENTE do objeto na foto (ex: se forem coelhos e ovos, desenha coelhos e ovos; se for um tanque, desenha um tanque). Não inventes estruturas metálicas genéricas.
-- ESCALA: Usa a pessoa de 1.80m (ou referência humana) na foto para calcular todas as dimensões reais em centímetros.
-- ESTILO: Desenho estilo CAD limpo, fundo branco, linhas pretas nítidas, texto legível.
-- SEM TEXTO EXTRA: Apenas as etiquetas das vistas ('VISTA SUPERIOR', 'VISTA FRONTAL', etc.).
+- FIDELIDADE: O desenho técnico tem de ser EXATAMENTE do objeto na foto.
+- ESCALA: Usa a pessoa de 1.80m na foto para calcular dimensões reais em centímetros.
+- ESTILO: Desenho estilo CAD limpo, fundo branco, linhas pretas nítidas.
 
 CRIA A IMAGEM AGORA BASEADA NA FOTO FORNECIDA.`;
 
-                    try {
-                        const response = await fetch('http://127.0.0.1:18790/generate', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                image: base64Image,
-                                prompt: promptText
-                            })
-                        });
-                        
-                        if(response.ok) {
-                            const data = await response.json();
-                            overlay.classList.add('hidden');
-                            resultImg.src = data.imageUrl; 
-                            resultImg.classList.remove('hidden');
-                        } else {
-                            throw new Error("Erro na geração");
+                    let success = false;
+                    const endpoints = ['http://127.0.0.1:18790/generate', 'http://localhost:18790/generate'];
+                    
+                    for(let url of endpoints) {
+                        try {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ image: base64Image, prompt: promptText })
+                            });
+                            
+                            if(response.ok) {
+                                const data = await response.json();
+                                overlay.classList.add('hidden');
+                                resultImg.src = data.imageUrl; 
+                                resultImg.classList.remove('hidden');
+                                success = true;
+                                break;
+                            }
+                        } catch(err) {
+                            console.error("Failed endpoint:", url, err);
                         }
-                    } catch(err) {
+                    }
+
+                    if(!success) {
                         content.innerHTML = `
-                            <div class="flex flex-col items-center gap-4 text-red-600">
+                            <div class="flex flex-col items-center gap-4 text-red-600 p-4">
                                 <div class="text-2xl">⚠️</div>
-                                <div class="font-bold text-sm text-center">ERRO NA LIGAÇÃO À AI.<br>Verifica se o OpenClaw está a correr.</div>
+                                <div class="font-bold text-sm text-center">ERRO NA LIGAÇÃO À AI.</div>
+                                <div class="text-[10px] text-gray-500 text-center">
+                                    1. Garante que permitiste 'Conteúdo Inseguro' no cadeado.<br>
+                                    2. Ou usa o link local: <span class="select-all font-mono">http://localhost:8080</span>
+                                </div>
                                 <button onclick="location.reload()" class="text-xs underline text-gray-500">Tentar novamente</button>
                             </div>
                         `;
                     }
                 };
+                reader.readAsDataURL(file);
+            }
+        }
                 reader.readAsDataURL(file);
             }
         }
