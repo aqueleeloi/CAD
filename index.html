@@ -183,12 +183,12 @@
                     <div class="label-br">VISTA DE FRENTE</div>
                 </div>
 
-                <div class="upload-overlay" id="upload-overlay">
+                <div class="upload-overlay" id="upload-overlay" onclick="if(event.target == this || event.target.classList.contains('upload-text')) document.getElementById('file-input').click()">
                     <div class="upload-content" id="upload-content">
                         <div class="flex flex-col items-center gap-2">
                             <div class="upload-icon" onclick="document.getElementById('file-input').click()">+</div>
                             <div class="upload-text text-center">UPLOAD E ANALISE AI</div>
-                            <button onclick="testConnection()" class="text-[10px] text-blue-500 underline mt-4">TESTAR LIGAÇÃO AO JARVAS</button>
+                            <button onclick="event.stopPropagation(); testConnection()" class="text-[10px] text-blue-500 underline mt-4">TESTAR LIGAÇÃO AO JARVAS</button>
                         </div>
                     </div>
                 </div>
