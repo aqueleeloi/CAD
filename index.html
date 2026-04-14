@@ -283,7 +283,21 @@
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const base64Image = e.target.result;
-                    const promptText = "Converter foto em desenho técnico CAD 2x2 com cotas em centímetros baseadas na pessoa de 1.80m.";
+                    const promptText = `Age como um engenheiro e designer técnico de elite. 
+Objetivo: Converter a FOTO ANEXADA num conjunto completo de desenhos técnicos ortográficos (Blueprints/CAD).
+
+ESTRUTURA DA RESPOSTA:
+Gera uma única imagem composta num layout de grade 2x2:
+1. Quadrante Superior Esquerdo: VISTA SUPERIOR (Planta com cotas).
+2. Quadrante Superior Direito: VISTA ISOMÉTRICA (3D realista).
+3. Quadrante Inferior Esquerdo: CORTE LATERAL.
+4. Quadrante Inferior Direito: VISTA FRONTAL (Elevação com cotas).
+
+REGRAS:
+- FIDELIDADE TOTAL ao objeto da foto.
+- Usa a pessoa de 1.80m como referência de escala.
+- Medidas em centímetros.
+- Estilo CAD limpo, fundo branco.`;
 
                     const endpoints = ['http://127.0.0.1:18790/generate', 'http://localhost:18790/generate'];
                     let success = false;
