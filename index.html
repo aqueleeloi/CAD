@@ -105,25 +105,13 @@
             cursor: pointer;
             color: #999;
             font-size: 20px;
+            transition: all 0.2s;
         }
-        .btn-plus:hover { background: #f0f0f0; color: #333; }
+        .btn-plus:hover { background: #f0f0f0; color: #333; border-color: #333; }
 
-        .editable-field { outline: none; border-bottom: 1px transparent dotted; }
-        .editable-field:hover { border-bottom: 1px solid #000; }
+        .editable-field { outline: none; border-bottom: 1px transparent dotted; min-width: 20px; display: inline-block; }
+        .editable-field:hover { border-bottom: 1px solid #000; background: #fffcea; }
         
-        #overlay-ai {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.95);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-        }
-
         .hidden { display: none !important; }
         
         .c-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; flex: 1; }
@@ -142,57 +130,47 @@
             color: #ccc;
             display: block;
         }
+
+        /* Edit Button Style */
+        .edit-trigger { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .edit-trigger:hover { opacity: 1; }
     </style>
 </head>
 <body>
 
     <div class="sheet-container">
-        <!-- AI START OVERLAY -->
-        <div id="overlay-ai">
-            <div class="mb-6">
-                <div class="text-6xl mb-4">🤖</div>
-                <h2 class="text-2xl font-bold mb-2">PESSA CAD GENERATOR</h2>
-                <p class="text-gray-600 max-w-md mx-auto">Insere a tua fotografia com escala (1.80m) para gerar as vistas automáticas.</p>
-            </div>
-            <textarea id="ai-prompt" class="w-full max-w-xl h-32 p-4 border mb-4 font-mono text-xs" readonly>Objetivo: Agir como um assistente de engenharia avançado... (A tua prompt está carregada)</textarea>
-            <div class="flex gap-4">
-                <button onclick="simulateAI()" class="bg-black text-white px-8 py-3 font-bold hover:bg-gray-800 transition">GERAR VISTAS (CAD AI)</button>
-                <input type="file" id="image-upload" class="hidden">
-            </div>
-        </div>
-
         <!-- HEADER / TITLE AREA -->
         <div class="mb-2 flex justify-between items-end border-b-2 border-black pb-1">
-            <div class="text-xs font-bold">1. VISTAS COTADAS (DIMENSÕES PRINCIPAIS)</div>
-            <div class="text-[10px] uppercase">Projeto: <span class="editable-field" contenteditable="true" placeholder="Nome do Projeto">ESTRUTURA METÁLICA</span></div>
+            <div class="text-xs font-bold">1. VISTAS COTADAS (DIMENSÕES PRINCIPAIS) <span class="edit-trigger" onclick="alert('Funcionalidade de regeneração AI ativa ao fazer upload nas vistas.')">⚙</span></div>
+            <div class="text-[10px] uppercase">Projeto: <span class="editable-field font-bold" contenteditable="true" placeholder="Nome do Projeto">ESTRUTURA METÁLICA</span></div>
         </div>
 
         <div class="main-content">
             <!-- 2x2 DRAWING AREA -->
             <div class="drawing-area" id="cad-grid">
-                <div class="quadrant">
+                <div class="quadrant" onclick="triggerUpload()">
                     <span class="quadrant-label">VISTA SUPERIOR</span>
-                    <img id="img-superior" class="w-full h-full object-contain p-4 hidden">
-                    <div class="btn-plus">⊕</div>
+                    <img id="view-1" class="w-full h-full object-contain p-2 hidden">
+                    <div class="btn-plus" id="plus-1">⊕</div>
                 </div>
-                <div class="quadrant">
+                <div class="quadrant" onclick="triggerUpload()">
                     <span class="quadrant-label">VISTA ISOMÉTRICA</span>
-                    <img id="img-isom" class="w-full h-full object-contain p-4 hidden">
-                    <div class="btn-plus">⊕</div>
+                    <img id="view-2" class="w-full h-full object-contain p-2 hidden">
+                    <div class="btn-plus" id="plus-2">⊕</div>
                 </div>
-                <div class="quadrant">
+                <div class="quadrant" onclick="triggerUpload()">
                     <span class="quadrant-label">CORTE A-A</span>
-                    <img id="img-corte" class="w-full h-full object-contain p-4 hidden">
-                    <div class="btn-plus">⊕</div>
+                    <img id="view-3" class="w-full h-full object-contain p-2 hidden">
+                    <div class="btn-plus" id="plus-3">⊕</div>
                 </div>
-                <div class="quadrant">
+                <div class="quadrant" onclick="triggerUpload()">
                     <span class="quadrant-label">VISTA FRONTAL</span>
-                    <img id="img-frontal" class="w-full h-full object-contain p-4 hidden">
-                    <div class="btn-plus">⊕</div>
+                    <img id="view-4" class="w-full h-full object-contain p-2 hidden">
+                    <div class="btn-plus" id="plus-4">⊕</div>
                 </div>
                 
-                <!-- FULL IMAGE OVERLAY (When AI triggers) -->
-                <img id="full-render" class="absolute inset-0 w-full h-full object-contain bg-white hidden z-20">
+                <!-- HIDDEN FILE INPUT -->
+                <input type="file" id="global-upload" class="hidden" accept="image/*" onchange="handleImage(this)">
             </div>
 
             <!-- SIDEBAR -->
@@ -205,7 +183,7 @@
 
                 <!-- Technical Sheet -->
                 <div class="info-card">
-                    <div class="card-header">FICHA TÉCNICA <span class="cursor-pointer">✎</span></div>
+                    <div class="card-header">FICHA TÉCNICA <span class="edit-trigger">✎</span></div>
                     <div class="text-[10px] space-y-1">
                         <div><b>REF:</b> <span class="editable-field" contenteditable="true">PS-2024-001</span></div>
                         <div><b>DATA:</b> <span class="editable-field" contenteditable="true">14/04/2026</span></div>
@@ -216,33 +194,30 @@
 
                 <!-- Detalhes Construtivos -->
                 <div class="info-card flex-1">
-                    <div class="card-header">2. DETALHES CONSTRUTIVOS <span class="cursor-pointer">✎</span></div>
-                    <div class="c-grid">
-                        <div class="btn-plus">⊕</div>
-                        <div class="btn-plus">⊕</div>
-                        <div class="btn-plus col-span-2 text-xs" contenteditable="true" placeholder="Adicionar notas técnicas..."></div>
+                    <div class="card-header">2. DETALHES CONSTRUTIVOS <span class="edit-trigger" onclick="addDetail()">⊕</span></div>
+                    <div class="c-grid" id="details-grid">
+                        <div class="btn-plus" onclick="uploadToElement(this)">⊕</div>
+                        <div class="btn-plus" onclick="uploadToElement(this)">⊕</div>
+                        <div class="btn-plus col-span-2 text-[10px] p-2 text-left items-start justify-start" contenteditable="true" placeholder="Clique para adicionar notas técnicas de fabricação..."></div>
                     </div>
                 </div>
 
                 <!-- Materials -->
                 <div class="info-card flex-1">
-                    <div class="card-header">3. LISTA DE MATERIAIS <span class="cursor-pointer">✎</span></div>
-                    <div class="text-[9px] space-y-2" contenteditable="true">
-                        <div class="flex items-center gap-1 border-b pb-1">🔲 Perfil Aço Inox 40x40mm</div>
-                        <div class="flex items-center gap-1 border-b pb-1">🔲 Chapa 5mm Zincada</div>
-                        <div class="flex items-center gap-1 border-b pb-1">🔲 Parafusos M12 Auto-roscantes</div>
+                    <div class="card-header">3. LISTA DE MATERIAIS <span class="edit-trigger" onclick="addMaterial()">⊕</span></div>
+                    <div id="materials-list" class="text-[9px] space-y-1 overflow-y-auto max-h-40 p-1">
+                        <div class="flex items-center gap-1 border-b pb-1" contenteditable="true">🔲 Perfil Aço Inox 40x40mm</div>
+                        <div class="flex items-center gap-1 border-b pb-1" contenteditable="true">🔲 Chapa 5mm Zincada</div>
                     </div>
-                    <div class="btn-plus h-8 mt-2">⊕</div>
                 </div>
 
                 <!-- Color Palette -->
                 <div class="flex border border-black p-2 gap-2 h-20 items-center">
                     <div class="text-[8px] font-bold border-r pr-2 h-full flex items-center" style="writing-mode: vertical-rl; transform: rotate(180deg);">PALETA</div>
-                    <div class="flex-1 h-full flex gap-1">
-                        <div class="flex-1 bg-gray-200 border border-gray-300"></div>
-                        <div class="flex-1 bg-gray-400 border border-gray-300"></div>
-                        <div class="flex-1 bg-yellow-100 border border-gray-300"></div>
-                        <div class="btn-plus flex-1 text-xs">⊕</div>
+                    <div class="flex-1 h-full flex gap-1" id="palette">
+                        <div class="flex-1 bg-gray-200 border border-gray-300 cursor-pointer" onclick="changeColor(this)"></div>
+                        <div class="flex-1 bg-gray-400 border border-gray-300 cursor-pointer" onclick="changeColor(this)"></div>
+                        <div class="btn-plus flex-1 text-xs" onclick="addColor()">⊕</div>
                     </div>
                 </div>
             </div>
@@ -250,50 +225,91 @@
 
         <!-- FOOTER AREA -->
         <div class="footer-area">
-            <div class="flex items-center gap-2 border-r pr-10 h-full">
+            <div class="flex items-center gap-2 border-r pr-10 h-full px-4">
                 <div class="text-[20px]">🛠</div>
                 <div class="text-[10px] font-bold">DETALHES<br>GERAIS</div>
             </div>
-            <div class="flex-1 px-4 text-[10px] italic text-gray-400" contenteditable="true" placeholder="Clique aqui para adicionar observações gerais sobre a montagem ou transporte..."></div>
-            <div class="bg-black text-white px-6 h-full flex items-center font-bold text-xs cursor-pointer hover:bg-gray-800">EXPORTAR PDF</div>
+            <div class="flex-1 px-4 text-[10px] italic text-gray-500" contenteditable="true" placeholder="Adicione aqui observações gerais sobre acabamento, soldadura ou montagem final..."></div>
+            <div class="bg-black text-white px-6 h-full flex items-center font-bold text-xs cursor-pointer hover:bg-gray-800" onclick="window.print()">EXPORTAR PDF</div>
         </div>
     </div>
 
     <script>
-        function simulateAI() {
-            const overlay = document.getElementById('overlay-ai');
-            const fullRender = document.getElementById('full-render');
-            
-            overlay.innerHTML = `
-                <div class="animate-bounce text-6xl mb-4">🚀</div>
-                <h2 class="text-2xl font-bold mb-2">JARVAS AI A PROCESSAR...</h2>
-                <p class="text-gray-600">Calculando escala baseada em 1.80m...<br>Gerando vistas CAD 2x2...</p>
-            `;
-
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                fullRender.src = 'vistas.jpg';
-                fullRender.classList.remove('hidden');
-                
-                // Opção para fechar o render e ver a grelha por baixo
-                fullRender.title = "Clique para fechar o overlay e editar os campos";
-                fullRender.onclick = () => {
-                    if(confirm("Deseja fechar o render para editar a ficha técnica?")) {
-                        fullRender.classList.add('hidden');
-                    }
-                };
-            }, 2500);
+        // Função para simular o upload nas vistas principais
+        function triggerUpload() {
+            document.getElementById('global-upload').click();
         }
 
-        // Tornar todos os botões "plus" funcionais com um alerta simples
-        document.querySelectorAll('.btn-plus').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if(!btn.hasAttribute('contenteditable')) {
-                    const type = prompt("Tipo de elemento a inserir (Imagem/Texto/Simbolo):", "Imagem");
-                    if(type) alert("Jarvas: Função '" + type + "' será implementada na integração com o sistema de ficheiros.");
+        function handleImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Simular AI preenchendo as 4 vistas com a mesma imagem ou variações
+                    // Na prática, aqui o Jarvas usaria as 4 vistas geradas.
+                    for(let i=1; i<=4; i++) {
+                        const img = document.getElementById('view-' + i);
+                        const plus = document.getElementById('plus-' + i);
+                        img.src = 'vistas.jpg'; // Usamos a imagem profissional gerada
+                        img.classList.remove('hidden');
+                        plus.classList.add('hidden');
+                    }
                 }
-            });
-        });
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Funções para os botões da Sidebar
+        function addMaterial() {
+            const list = document.getElementById('materials-list');
+            const item = document.createElement('div');
+            item.className = "flex items-center gap-1 border-b pb-1";
+            item.contentEditable = true;
+            item.innerHTML = "🔲 Novo Material...";
+            list.appendChild(item);
+            item.focus();
+        }
+
+        function addDetail() {
+            const grid = document.getElementById('details-grid');
+            const btn = document.createElement('div');
+            btn.className = "btn-plus";
+            btn.innerHTML = "⊕";
+            btn.onclick = function() { uploadToElement(this); };
+            grid.insertBefore(btn, grid.lastElementChild);
+        }
+
+        function uploadToElement(el) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    el.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
+                    el.classList.remove('btn-plus');
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function addColor() {
+            const palette = document.getElementById('palette');
+            const color = document.createElement('div');
+            const hex = prompt("Insira a cor HEX (ex: #ff0000):", "#");
+            if(hex && hex !== "#") {
+                color.className = "flex-1 border border-gray-300 cursor-pointer";
+                color.style.backgroundColor = hex;
+                color.onclick = function() { changeColor(this); };
+                palette.insertBefore(color, palette.lastElementChild);
+            }
+        }
+
+        function changeColor(el) {
+            const hex = prompt("Mudar cor HEX:", el.style.backgroundColor);
+            if(hex) el.style.backgroundColor = hex;
+        }
     </script>
 </body>
 </html>
