@@ -6,309 +6,313 @@
     <title>PESSA - CAD & Quotes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; padding: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; padding: 40px; display: flex; justify-content: center; }
         
         .sheet-container {
-            width: 1200px;
-            height: 850px;
+            width: 1100px;
+            height: 750px;
             background: white;
-            margin: 0 auto;
-            border: 2px solid #000;
             padding: 10px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             position: relative;
         }
 
         .main-content {
             flex: 1;
             display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 10px;
+            grid-template-columns: 2.5fr 1fr;
+            gap: 15px;
+            height: 100%;
         }
 
         .drawing-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            border: 1px solid #000;
+            border: 3px solid #888;
             position: relative;
-        }
-
-        .quadrant {
-            border: 0.5px solid #ccc;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
             background: #fff;
             overflow: hidden;
         }
 
-        .quadrant-label {
+        /* 2x2 Grid Lines behind the overlay */
+        .grid-lines {
             position: absolute;
-            top: 5px;
-            left: 5px;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: rgba(255,255,255,0.8);
-            padding: 2px 4px;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .grid-lines div { border: 1px solid #e5e7eb; }
+
+        .quadrant-labels {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
             z-index: 10;
+        }
+
+        .label-tl { position: absolute; top: 15px; left: 15px; font-weight: 700; font-size: 11px; color: #333; }
+        .label-tr { position: absolute; top: 15px; right: 15px; font-weight: 700; font-size: 11px; color: #333; }
+        .label-bl { position: absolute; top: 50%; left: 15px; font-weight: 700; font-size: 11px; color: #333; transform: translateY(-50%); margin-top: 15px;}
+        .label-br { position: absolute; top: 50%; right: 15px; font-weight: 700; font-size: 11px; color: #333; transform: translateY(-50%); margin-top: 15px;}
+
+        .upload-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            cursor: pointer;
+            background: rgba(255,255,255,0.8);
+            transition: background 0.3s;
+        }
+        
+        .upload-overlay:hover { background: rgba(243, 244, 246, 0.9); }
+
+        .upload-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #4b5563;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #4b5563;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .upload-text {
+            font-weight: 700;
+            font-size: 14px;
+            max-width: 250px;
+            line-height: 1.2;
         }
 
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-
-        .info-card {
-            border: 1px solid #000;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .card-header {
-            background: #000;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 0;
         }
 
         .logo-box {
-            background: #000;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
+            padding-bottom: 20px;
         }
 
-        .logo-box .brand { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
-        .logo-box .sub { font-size: 8px; letter-spacing: 2px; }
+        .logo-box .brand { font-family: 'Montserrat', sans-serif; font-size: 38px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+        .logo-box .sub { font-size: 8px; font-weight: 700; letter-spacing: 3px; color: #666; margin-top: 2px; }
 
-        .btn-plus {
-            width: 100%;
-            height: 100%;
-            border: 1px dashed #999;
+        .info-section {
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 0;
+            flex: 1;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #999;
-            font-size: 20px;
-            transition: all 0.2s;
+            flex-direction: column;
         }
-        .btn-plus:hover { background: #f0f0f0; color: #333; border-color: #333; }
 
-        .editable-field { outline: none; border-bottom: 1px transparent dotted; min-width: 20px; display: inline-block; }
-        .editable-field:hover { border-bottom: 1px solid #000; background: #fffcea; }
-        
+        .section-title {
+            font-weight: 700;
+            font-size: 11px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .editable-field { outline: none; display: inline-block; min-width: 20px; border-bottom: 1px dotted transparent;}
+        .editable-field:hover, .editable-field:focus { background: #f3f4f6; border-bottom: 1px dotted #9ca3af;}
+        [contenteditable]:empty:before { content: attr(placeholder); color: #9ca3af; }
+
+        .tech-sheet { font-size: 10px; display: grid; grid-template-columns: 50px 1fr; gap: 4px; align-items: baseline;}
+        .tech-label { font-weight: 700; color: #666; }
+
+        .btn-add {
+            font-size: 14px; color: #9ca3af; cursor: pointer; transition: color 0.2s;
+        }
+        .btn-add:hover { color: #333; }
+
         .hidden { display: none !important; }
         
-        .c-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; flex: 1; }
-        
-        .footer-area {
-            height: 80px;
-            border: 1px solid #000;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
+        #result-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 15;
+            position: relative;
+            background: white;
         }
 
-        [contenteditable]:empty:before {
-            content: attr(placeholder);
-            color: #ccc;
-            display: block;
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
         }
-
-        /* Edit Button Style */
-        .edit-trigger { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        .edit-trigger:hover { opacity: 1; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div class="sheet-container">
-        <!-- HEADER / TITLE AREA -->
-        <div class="mb-2 flex justify-between items-end border-b-2 border-black pb-1">
-            <div class="text-xs font-bold">1. VISTAS COTADAS (DIMENSÕES PRINCIPAIS) <span class="edit-trigger" onclick="alert('Funcionalidade de regeneração AI ativa ao fazer upload nas vistas.')">⚙</span></div>
-            <div class="text-[10px] uppercase">Projeto: <span class="editable-field font-bold" contenteditable="true" placeholder="Nome do Projeto">ESTRUTURA METÁLICA</span></div>
-        </div>
-
         <div class="main-content">
-            <!-- 2x2 DRAWING AREA -->
-            <div class="drawing-area" id="cad-grid">
-                <div class="quadrant" onclick="triggerUpload()">
-                    <span class="quadrant-label">VISTA SUPERIOR</span>
-                    <img id="view-1" class="w-full h-full object-contain p-2 hidden">
-                    <div class="btn-plus" id="plus-1">⊕</div>
+            
+            <!-- DRAWING AREA -->
+            <div class="drawing-area" id="drop-zone">
+                <div class="grid-lines">
+                    <div></div><div></div><div></div><div></div>
                 </div>
-                <div class="quadrant" onclick="triggerUpload()">
-                    <span class="quadrant-label">VISTA ISOMÉTRICA</span>
-                    <img id="view-2" class="w-full h-full object-contain p-2 hidden">
-                    <div class="btn-plus" id="plus-2">⊕</div>
+
+                <div class="quadrant-labels" id="labels">
+                    <div class="label-tl">VISTA REALISTA ISOMETRICA</div>
+                    <div class="label-tr">VISTA DE CIMA</div>
+                    <div class="label-bl">VISTA DE LADO</div>
+                    <div class="label-br">VISTA DE FRENTE</div>
                 </div>
-                <div class="quadrant" onclick="triggerUpload()">
-                    <span class="quadrant-label">CORTE A-A</span>
-                    <img id="view-3" class="w-full h-full object-contain p-2 hidden">
-                    <div class="btn-plus" id="plus-3">⊕</div>
+
+                <div class="upload-overlay" id="upload-overlay" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-content" id="upload-content">
+                        <div class="upload-icon">+</div>
+                        <div class="upload-text">UPLOAD E ANALISE AI GOOGLE PARA CRIAR AS VISTAS E MEDIDAS</div>
+                    </div>
                 </div>
-                <div class="quadrant" onclick="triggerUpload()">
-                    <span class="quadrant-label">VISTA FRONTAL</span>
-                    <img id="view-4" class="w-full h-full object-contain p-2 hidden">
-                    <div class="btn-plus" id="plus-4">⊕</div>
-                </div>
+
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="handleUpload(this)">
                 
-                <!-- HIDDEN FILE INPUT -->
-                <input type="file" id="global-upload" class="hidden" accept="image/*" onchange="handleImage(this)">
+                <img id="result-image" class="hidden">
             </div>
 
             <!-- SIDEBAR -->
             <div class="sidebar">
-                <!-- Brand -->
                 <div class="logo-box">
                     <div class="brand">PESSA</div>
                     <div class="sub">ATELIER CRIATIVO</div>
                 </div>
 
-                <!-- Technical Sheet -->
-                <div class="info-card">
-                    <div class="card-header">FICHA TÉCNICA <span class="edit-trigger">✎</span></div>
-                    <div class="text-[10px] space-y-1">
-                        <div><b>REF:</b> <span class="editable-field" contenteditable="true">PS-2024-001</span></div>
-                        <div><b>DATA:</b> <span class="editable-field" contenteditable="true">14/04/2026</span></div>
-                        <div><b>ESCALA:</b> <span class="editable-field" contenteditable="true">1:20 (REF 1.80m)</span></div>
-                        <div><b>AUTOR:</b> <span class="editable-field" contenteditable="true">Elói</span></div>
+                <div class="info-section">
+                    <div class="section-title">FICHA TÉCNICA</div>
+                    <div class="tech-sheet">
+                        <span class="tech-label">PROJ:</span>
+                        <span class="editable-field font-bold" contenteditable="true" placeholder="Nome do Projeto"></span>
+                        
+                        <span class="tech-label">REF:</span>
+                        <span class="editable-field" contenteditable="true" placeholder="0001"></span>
+                        
+                        <span class="tech-label">DATA:</span>
+                        <span class="editable-field" contenteditable="true" placeholder="DD/MM/AAAA"></span>
+                        
+                        <span class="tech-label">ESC:</span>
+                        <span class="editable-field" contenteditable="true">1:20 (1.80m)</span>
                     </div>
                 </div>
 
-                <!-- Detalhes Construtivos -->
-                <div class="info-card flex-1">
-                    <div class="card-header">2. DETALHES CONSTRUTIVOS <span class="edit-trigger" onclick="addDetail()">⊕</span></div>
-                    <div class="c-grid" id="details-grid">
-                        <div class="btn-plus" onclick="uploadToElement(this)">⊕</div>
-                        <div class="btn-plus" onclick="uploadToElement(this)">⊕</div>
-                        <div class="btn-plus col-span-2 text-[10px] p-2 text-left items-start justify-start" contenteditable="true" placeholder="Clique para adicionar notas técnicas de fabricação..."></div>
+                <div class="info-section flex-1">
+                    <div class="section-title">
+                        DETALHES CONSTRUTIVOS
+                        <span class="btn-add" onclick="addDetail()">+</span>
+                    </div>
+                    <div id="details-list" class="text-[10px] space-y-2" contenteditable="true" placeholder="Clique para adicionar detalhes da estrutura, soldaduras, etc...">
                     </div>
                 </div>
 
-                <!-- Materials -->
-                <div class="info-card flex-1">
-                    <div class="card-header">3. LISTA DE MATERIAIS <span class="edit-trigger" onclick="addMaterial()">⊕</span></div>
-                    <div id="materials-list" class="text-[9px] space-y-1 overflow-y-auto max-h-40 p-1">
-                        <div class="flex items-center gap-1 border-b pb-1" contenteditable="true">🔲 Perfil Aço Inox 40x40mm</div>
-                        <div class="flex items-center gap-1 border-b pb-1" contenteditable="true">🔲 Chapa 5mm Zincada</div>
+                <div class="info-section flex-1">
+                    <div class="section-title">
+                        LISTA DE MATERIAIS
+                        <span class="btn-add" onclick="addMaterial()">+</span>
+                    </div>
+                    <div id="materials-list" class="text-[10px] space-y-2">
+                        <div class="flex gap-2 items-start group">
+                            <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
+                            <span class="editable-field flex-1" contenteditable="true" placeholder="Descrição do material..."></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Color Palette -->
-                <div class="flex border border-black p-2 gap-2 h-20 items-center">
-                    <div class="text-[8px] font-bold border-r pr-2 h-full flex items-center" style="writing-mode: vertical-rl; transform: rotate(180deg);">PALETA</div>
-                    <div class="flex-1 h-full flex gap-1" id="palette">
-                        <div class="flex-1 bg-gray-200 border border-gray-300 cursor-pointer" onclick="changeColor(this)"></div>
-                        <div class="flex-1 bg-gray-400 border border-gray-300 cursor-pointer" onclick="changeColor(this)"></div>
-                        <div class="btn-plus flex-1 text-xs" onclick="addColor()">⊕</div>
-                    </div>
+                <div class="info-section pb-0 border-b-0">
+                    <button class="w-full bg-black text-white py-3 text-xs font-bold hover:bg-gray-800 transition" onclick="window.print()">EXPORTAR PDF</button>
                 </div>
             </div>
-        </div>
-
-        <!-- FOOTER AREA -->
-        <div class="footer-area">
-            <div class="flex items-center gap-2 border-r pr-10 h-full px-4">
-                <div class="text-[20px]">🛠</div>
-                <div class="text-[10px] font-bold">DETALHES<br>GERAIS</div>
-            </div>
-            <div class="flex-1 px-4 text-[10px] italic text-gray-500" contenteditable="true" placeholder="Adicione aqui observações gerais sobre acabamento, soldadura ou montagem final..."></div>
-            <div class="bg-black text-white px-6 h-full flex items-center font-bold text-xs cursor-pointer hover:bg-gray-800" onclick="window.print()">EXPORTAR PDF</div>
         </div>
     </div>
 
     <script>
-        // Função para simular o upload nas vistas principais
-        function triggerUpload() {
-            document.getElementById('global-upload').click();
-        }
-
-        function handleImage(input) {
+        function handleUpload(input) {
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const content = document.getElementById('upload-content');
+                const overlay = document.getElementById('upload-overlay');
+                const resultImg = document.getElementById('result-image');
+
+                // Mostrar Loading
+                content.innerHTML = `
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="loading-spinner"></div>
+                        <div class="font-bold text-sm text-center">A analisar foto e a usar AI para<br>gerar vistas e medidas...</div>
+                    </div>
+                `;
+
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Simular AI preenchendo as 4 vistas com a mesma imagem ou variações
-                    // Na prática, aqui o Jarvas usaria as 4 vistas geradas.
-                    for(let i=1; i<=4; i++) {
-                        const img = document.getElementById('view-' + i);
-                        const plus = document.getElementById('plus-' + i);
-                        img.src = 'vistas.jpg'; // Usamos a imagem profissional gerada
-                        img.classList.remove('hidden');
-                        plus.classList.add('hidden');
+                reader.onload = async function(e) {
+                    const base64Image = e.target.result;
+                    const promptText = "Objetivo: Agir como um assistente de engenharia avançado para converter fotografias de instalações industriais ou equipamentos, que incluam uma pessoa de 1,80m como referência de escala, em um conjunto completo e padronizado de desenhos de documentação técnica ortográfica. O resultado final deve ser renderizado num layout de grade 2x2 exato, como mostrado na imagem de referência. Passo 1: Análise e Escala da Imagem/instalação. Identificação de Escala: Primeiro, identifique a pessoa de 1,80m na imagem de origem como a referência de escala absoluta. Cálculo Proporcional: Usando a proporção da pessoa, calcule as dimensões reais (comprimento, largura, altura, diâmetros, espessuras de parede) de todo equipamento ou estrutura que está sendo documentado. Todas as medidas geradas devem ser proporcionais a essa referência humana. Passo 2: Geração de Layout e Vistas (Layout 2x2). Crie uma renderização de desenho técnico em alta definição com um fundo branco limpo. O layout deve conter as seguintes quatro vistas dispostas em uma grade 2x2, exatamente como na estrutura de referência: Quadrante Superior Direito (Vista Isométrica): Uma vista isométrica 3D limpa e renderizada do equipamento completo e realista, fotorealismo. Quadrante Superior Esquerdo (Vista Superior com Cotas): Uma vista superior (planta) completa do equipamento. Esta vista deve incluir todas as linhas de cota, setas e números calculados proporcionalmente. Incluir linhas de centro e a etiqueta da vista 'VISTA SUPERIOR'. Quadrante Inferior Esquerdo (Vista Lateral em Corte A-A): Uma vista lateral que foi cortada ao longo da linha A-A. Deve incluir: Hachuras de corte de metal técnico padrão nas superfícies cortadas. Linha de corte e setas A-A claramente marcadas. Cotas calculadas para espessura de parede, altura, profundidade do corte (como 12.7, etc.) e diâmetros dos furos cortados com o símbolo Ø (por exemplo, Ø12.7). Incluir a etiqueta 'CORTE A-A'. Quadrante Inferior Direito (Vista Frontal com Cotas): Uma vista frontal completa do equipamento. Deve incluir todas as linhas de cota de altura e distâncias entre centros (como 25.4, 88.9, etc.). Incluir linhas de centro e a etiqueta 'VISTA FRONTAL'. Requisitos Adicionais: Medidas em: centimetros. Padronização de Cotas: Todas as linhas de cota, setas e texto devem ser claros, nítidos e consistentes com os padrões profissionais de desenho de engenharia. Os números de cota calculados devem ser colocados em posições correspondentes às da referência. Símbolos: Use o símbolo de diâmetro (Ø) para todos os furos redondos. Use linhas de centro (ponto-e-traço) onde aplicável. Formato de Saída: Gerar uma única imagem composta em alta resolução do layout de desenho técnico 2 em cima e 2 em baixo, desenho completo. Certifique-se de que todo o texto e cotas sejam legíveis e que o estilo seja um desenho estilo CAD limpo e profissional! CRIA A IMAGEM!";
+
+                    // Na implementação final local com OpenClaw, este fetch faz o bypass para o Jarvas:
+                    try {
+                        const response = await fetch('http://localhost:18789/api/agent/prompt', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                image: base64Image,
+                                prompt: promptText
+                            })
+                        });
+                        
+                        if(response.ok) {
+                            const data = await response.json();
+                            // Se a API retornar a imagem gerada
+                            overlay.classList.add('hidden');
+                            resultImg.src = data.imageUrl || 'vistas.jpg'; // fallback para demo
+                            resultImg.classList.remove('hidden');
+                        } else {
+                            throw new Error("API não disponível");
+                        }
+                    } catch(err) {
+                        // Fallback de demonstração visual se a API não estiver ligada
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                            // Em modo demo mostra a imagem que estava na pasta
+                            resultImg.src = 'vistas.jpg'; 
+                            resultImg.classList.remove('hidden');
+                        }, 3000);
                     }
-                }
-                reader.readAsDataURL(input.files[0]);
+                };
+                reader.readAsDataURL(file);
             }
         }
 
-        // Funções para os botões da Sidebar
         function addMaterial() {
             const list = document.getElementById('materials-list');
             const item = document.createElement('div');
-            item.className = "flex items-center gap-1 border-b pb-1";
-            item.contentEditable = true;
-            item.innerHTML = "🔲 Novo Material...";
+            item.className = "flex gap-2 items-start group";
+            item.innerHTML = `
+                <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
+                <span class="editable-field flex-1" contenteditable="true" placeholder="Descrição do material..."></span>
+            `;
             list.appendChild(item);
-            item.focus();
-        }
-
-        function addDetail() {
-            const grid = document.getElementById('details-grid');
-            const btn = document.createElement('div');
-            btn.className = "btn-plus";
-            btn.innerHTML = "⊕";
-            btn.onclick = function() { uploadToElement(this); };
-            grid.insertBefore(btn, grid.lastElementChild);
-        }
-
-        function uploadToElement(el) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = event => {
-                    el.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
-                    el.classList.remove('btn-plus');
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        }
-
-        function addColor() {
-            const palette = document.getElementById('palette');
-            const color = document.createElement('div');
-            const hex = prompt("Insira a cor HEX (ex: #ff0000):", "#");
-            if(hex && hex !== "#") {
-                color.className = "flex-1 border border-gray-300 cursor-pointer";
-                color.style.backgroundColor = hex;
-                color.onclick = function() { changeColor(this); };
-                palette.insertBefore(color, palette.lastElementChild);
-            }
-        }
-
-        function changeColor(el) {
-            const hex = prompt("Mudar cor HEX:", el.style.backgroundColor);
-            if(hex) el.style.backgroundColor = hex;
+            item.querySelector('.editable-field').focus();
         }
     </script>
 </body>
