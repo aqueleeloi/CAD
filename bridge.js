@@ -40,7 +40,7 @@ const server = http.createServer((req, res) => {
                 const escapedPrompt = finalPrompt.replace(/"/g, '\\"').replace(/\n/g, ' ');
                 const escapedInput = tempInput.replace(/\\/g, '\\\\');
                 
-                const cmd = `openclaw tools call default_api:image_generate "{\\"prompt\\": \\"${escapedPrompt}\\", \\"image\\": \\"${escapedInput}\\"}"`;
+                const cmd = `openclaw agent --agent main --message "Gera uma imagem exatamente com esta prompt: ${escapedPrompt}. Usa a ferramenta image_generate. Aqui está a imagem base: ${escapedInput}" --json`;
                 log(`Executing: ${cmd}`);
 
                 const env = { ...process.env, OPENCLAW_TOKEN: 'beea43f799c784b449b7ea467b9a8919e0b7f736ce94ea54' };
@@ -49,18 +49,18 @@ const server = http.createServer((req, res) => {
                     log(`STDERR: ${stderr}`);
                     
                     let outPath = null;
-                    const match = stdout.match(/MEDIA:\s*(.*?\.jpg)/i) || stdout.match(/MEDIA:\s*(.*?\.png)/i) || stdout.match(/MEDIA:\s*(.*?\.webp)/i);
+                    const match = stdout.match(/MEDIA:\s*([^\s]+\.(jpg|png|webp))/i);
                     if(match) outPath = match[1];
                     else {
-                        const jsonMatch = stdout.match(/\{[\s\S]*\}/);
-                        if(jsonMatch) {
-                            try {
+                        try {
+                            const jsonMatch = stdout.match(/\{[\s\S]*\}/);
+                            if(jsonMatch) {
                                 const parsed = JSON.parse(jsonMatch[0]);
                                 if(parsed.output && parsed.output.attachments && parsed.output.attachments[0]) {
                                     outPath = parsed.output.attachments[0].path;
                                 }
-                            } catch(e){}
-                        }
+                            }
+                        } catch(e){}
                     }
 
                     if (outPath && fs.existsSync(outPath)) {
