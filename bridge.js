@@ -14,116 +14,73 @@ function log(msg) {
 
 const server = http.createServer((req, res) => {
     log(`${req.method} ${req.url}`);
-    
-    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') {
-        res.writeHead(204);
-        res.end();
-        return;
-    }
-
-    if (req.method === 'GET' && req.url === '/ping') {
-        res.writeHead(200);
-        res.end('pong');
-        return;
-    }
+    if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+    if (req.method === 'GET' && req.url === '/ping') { res.writeHead(200); res.end('pong'); return; }
 
     if (req.method === 'POST' && req.url === '/generate') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
-                log(`Received request for generation`);
+                log(`Received generation request`);
                 const data = JSON.parse(body);
-                const { image, prompt } = data;
-                
-                if (!image) throw new Error("No image provided");
+                if (!data.image) throw new Error("No image provided");
 
                 const tempInput = path.join(__dirname, 'temp_input.jpg');
-                const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+                const base64Data = data.image.replace(/^data:image\/\w+;base64,/, "");
                 fs.writeFileSync(tempInput, base64Data, 'base64');
                 log(`Saved temp image: ${tempInput}`);
 
-                const safePrompt = (prompt || '').replace(/"/g, '\\"').replace(/\n/g, ' ');
-                const fullPrompt = `Gera um desenho técnico CAD 2x2. Fundo branco, cotas em cm. Referência: pessoa 1.80m. ${safePrompt}`;
+                const finalPrompt = `Crie uma única imagem composta de alta resolução, organizada numa grade 2x2 precisa, para uma instalação de arco de Páscoa em grande escala, baseada nos dados específicos fornecidos abaixo. O estilo deve ser um desenho técnico CAD limpo com renderização colorida em um fundo branco puro. 1.Quadrante Superior Esquerdo: Uma renderização fotográfica 3D colorida e realista do arco de Páscoa completo, com orelhas de coelho brancas e rosa, um arco-íris turquesa e branco, e uma coleção de ovos de Páscoa decorados (bolinhas, listras) na base. 2.Quadrante Superior Direito: Uma vista superior técnica (planta) do arco. Dimensões: comprimento total de '2,40m (240 cm)', profundidade de '0,25m (25 cm)'. Inclua o texto 'Topo'. 3.Quadrante Inferior Esquerdo: Uma vista lateral técnica do arco e de um ovo lateral. Dimensões: profundidade da base de '0,70m', altura do ovo lateral de '0,35m'. 4.Quadrante Inferior Direito: Uma vista frontal técnica (elevação) detalhada. Dimensões: largura total da base de '2,50m (250 cm)', altura total de '3,40m (340 cm)', largura interior do arco de '0,90m (90 cm)', altura interior do arco de '2,20m (220 cm)', altura do ovo esquerdo de '0,60m'. Inclua uma silhueta humana inteira dentro do arco, com a linha de cota lateral 'Escala Humana (1,80m)'. Todas as linhas de cota, setas e números devem ser claros, precisos e consistentes com os padrões profissionais de desenho de engenharia. Use o símbolo de diâmetro (Ø) para todos os furos redondos. Todas as medidas devem ser dadas em centímetros onde apropriado, usando as conversões mostradas. CRIA A IMAGEM!`;
+
+                const escapedPrompt = finalPrompt.replace(/"/g, '\\"').replace(/\n/g, ' ');
+                const escapedInput = tempInput.replace(/\\/g, '\\\\');
                 
-                const sessionId = `cad-session-${Date.now()}`;
-                const cmd = `openclaw tools call default_api:image_generate "{\\"prompt\\": \\"Blueprint ortogr�fico de desenho t�cnico CAD 2x2. Fundo branco.\\", \\"image\\": \\"${tempInput.replace(/\\/g, '\\\\')}\\"}"`;
+                const cmd = `openclaw tools call default_api:image_generate "{\\"prompt\\": \\"${escapedPrompt}\\", \\"image\\": \\"${escapedInput}\\"}"`;
                 log(`Executing: ${cmd}`);
 
                 const env = { ...process.env, OPENCLAW_TOKEN: 'beea43f799c784b449b7ea467b9a8919e0b7f736ce94ea54' };
                 exec(cmd, { env }, (error, stdout, stderr) => {
-                    if (error) {
-                        log(`Exec error: ${error.message}`);
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ error: error.message, stderr }));
-                        return;
+                    log(`STDOUT: ${stdout}`);
+                    log(`STDERR: ${stderr}`);
+                    
+                    let outPath = null;
+                    const match = stdout.match(/MEDIA:\s*(.*?\.jpg)/i) || stdout.match(/MEDIA:\s*(.*?\.png)/i) || stdout.match(/MEDIA:\s*(.*?\.webp)/i);
+                    if(match) outPath = match[1];
+                    else {
+                        const jsonMatch = stdout.match(/\{[\s\S]*\}/);
+                        if(jsonMatch) {
+                            try {
+                                const parsed = JSON.parse(jsonMatch[0]);
+                                if(parsed.output && parsed.output.attachments && parsed.output.attachments[0]) {
+                                    outPath = parsed.output.attachments[0].path;
+                                }
+                            } catch(e){}
+                        }
                     }
-                    processResult(stdout, res);
+
+                    if (outPath && fs.existsSync(outPath)) {
+                        log(`Found output image: ${outPath}`);
+                        const outBase64 = fs.readFileSync(outPath, 'base64');
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ imageUrl: `data:image/png;base64,${outBase64}` }));
+                    } else {
+                        log(`Image not found.`);
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ error: "Image generation failed.", stdout }));
+                    }
                 });
             } catch (e) {
-                log(`Request error: ${e.message}`);
-                res.writeHead(400);
-                res.end(JSON.stringify({ error: e.message }));
+                res.writeHead(400); res.end(JSON.stringify({ error: e.message }));
             }
         });
     } else {
-        res.writeHead(404);
-        res.end();
+        res.writeHead(404); res.end();
     }
 });
 
-function processResult(stdout, res) {
-    try {
-        log(`Parsing result...`);
-        const jsonMatch = stdout.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            // Se falhar o parse do wrapper do OpenClaw, assumimos que o output é cru
-            log("Fallback: searching string for media path");
-            const mediaMatch = stdout.match(/MEDIA:(.*?\.jpg)/i);
-            if (mediaMatch) {
-                outPath = mediaMatch[1];
-            } else {
-                throw new Error("No JSON or MEDIA tag found in output");
-            }
-        } else {
-            const result = JSON.parse(jsonMatch[0]);
-            if (result.attachments && result.attachments.length > 0) {
-                outPath = result.attachments.find(a => a.path && a.path.match(/\.(jpg|jpeg|png|webp)$/i))?.path;
-            }
-            if (!outPath && result.path) outPath = result.path;
-            if (!outPath && result.result?.path) outPath = result.result.path;
-            // Se for string pura com json parseado
-            if (!outPath && typeof result === 'string') {
-                const innerMatch = result.match(/"path":\s*"([^"]+)"/);
-                if (innerMatch) outPath = innerMatch[1].replace(/\\\\/g, '\\');
-            }
-        }
-
-        if (outPath && fs.existsSync(outPath)) {
-            log(`Found output image: ${outPath}`);
-            const outBase64 = fs.readFileSync(outPath, 'base64');
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ imageUrl: `data:image/png;base64,${outBase64}` }));
-        } else {
-            log(`Output image not found in result`);
-            res.writeHead(404);
-            res.end(JSON.stringify({ error: "Imagem não gerada", details: result }));
-        }
-    } catch (e) {
-        log(`Parse error: ${e.message}`);
-        res.writeHead(500);
-        res.end(JSON.stringify({ error: "Erro ao processar output", message: e.message, stdout }));
-    }
-}
-
-server.listen(PORT, '0.0.0.0', () => {
-    log(`Bridge listening on http://0.0.0.0:${PORT}`);
-});
-
-
-
+server.listen(PORT, '0.0.0.0', () => { log(`Server listening on port ${PORT}`); });
