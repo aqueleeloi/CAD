@@ -48,12 +48,15 @@ const server = http.createServer((req, res) => {
                 fs.writeFileSync(tempInput, base64Data, 'base64');
                 log(`Saved temp image: ${tempInput}`);
 
-                // Mencionar o path diretamente na mensagem para o agente ler
-                const safePrompt = prompt.replace(/"/g, '\\"').replace(/\n/g, ' ');
-                const cmd = `openclaw agent --agent main --message "Processa esta imagem localizada em: ${tempInput}. ${safePrompt}" --json`;
+                const safePrompt = (prompt || '').replace(/"/g, '\\"').replace(/\n/g, ' ');
+                const fullPrompt = `Gera um desenho técnico CAD 2x2. Fundo branco, cotas em cm. Referência: pessoa 1.80m. ${safePrompt}`;
+                
+                const sessionId = `cad-session-${Date.now()}`;
+                const cmd = `openclaw agent --agent main --message "Age como especialista em CAD. LÊ OBRIGATORIAMENTE a foto do utilizador localizada em: ${tempInput} (usa a tool image). Em seguida, gera um blueprint ortográfico 2x2 com a tool image_generate." --json`;
                 log(`Executing: ${cmd}`);
 
-                exec(cmd, (error, stdout, stderr) => {
+                const env = { ...process.env, OPENCLAW_TOKEN: 'beea43f799c784b449b7ea467b9a8919e0b7f736ce94ea54' };
+                exec(cmd, { env }, (error, stdout, stderr) => {
                     if (error) {
                         log(`Exec error: ${error.message}`);
                         res.writeHead(500);
@@ -78,16 +81,28 @@ function processResult(stdout, res) {
     try {
         log(`Parsing result...`);
         const jsonMatch = stdout.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("No JSON found in output");
-        
-        const result = JSON.parse(jsonMatch[0]);
-        let outPath = null;
-        
-        if (result.attachments && result.attachments.length > 0) {
-            outPath = result.attachments.find(a => a.path && a.path.match(/\.(jpg|jpeg|png|webp)$/i))?.path;
+        if (!jsonMatch) {
+            // Se falhar o parse do wrapper do OpenClaw, assumimos que o output é cru
+            log("Fallback: searching string for media path");
+            const mediaMatch = stdout.match(/MEDIA:(.*?\.jpg)/i);
+            if (mediaMatch) {
+                outPath = mediaMatch[1];
+            } else {
+                throw new Error("No JSON or MEDIA tag found in output");
+            }
+        } else {
+            const result = JSON.parse(jsonMatch[0]);
+            if (result.attachments && result.attachments.length > 0) {
+                outPath = result.attachments.find(a => a.path && a.path.match(/\.(jpg|jpeg|png|webp)$/i))?.path;
+            }
+            if (!outPath && result.path) outPath = result.path;
+            if (!outPath && result.result?.path) outPath = result.result.path;
+            // Se for string pura com json parseado
+            if (!outPath && typeof result === 'string') {
+                const innerMatch = result.match(/"path":\s*"([^"]+)"/);
+                if (innerMatch) outPath = innerMatch[1].replace(/\\\\/g, '\\');
+            }
         }
-        if (!outPath && result.path) outPath = result.path;
-        if (!outPath && result.result?.path) outPath = result.result.path;
 
         if (outPath && fs.existsSync(outPath)) {
             log(`Found output image: ${outPath}`);
@@ -109,3 +124,6 @@ function processResult(stdout, res) {
 server.listen(PORT, '0.0.0.0', () => {
     log(`Bridge listening on http://0.0.0.0:${PORT}`);
 });
+
+
+

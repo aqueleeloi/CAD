@@ -250,12 +250,12 @@
             <div class="box-header">
                 4. DETALHES DOS OVOS DECORATIVOS <i class="fa-regular fa-pen-to-square"></i>
             </div>
-            <div class="box-content box-4-content">
-                <div class="flex gap-12">
-                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            <div class="box-content box-4-content" id="box4-container">
+                <div class="flex gap-12" id="box4-left">
+                    <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                    <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
                 </div>
-                <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-plus" onclick="addSection(document.getElementById('box4-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -275,9 +275,9 @@
                 <div class="sub">ATELIER CRIATIVO</div>
             </div>
             <div class="flex flex-col gap-1 text-[13px] font-semibold text-gray-700 pt-2">
-                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> FICHA TECNICA: (ADICIONAR NOME)</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> (ADICIONAR NOME)</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> (ADICIONAR DESCRIÇÃO)</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> <span contenteditable="true" class="outline-none border-b border-dashed border-gray-400 min-w-[200px]">FICHA TECNICA: (ADICIONAR NOME)</span></div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> <span contenteditable="true" class="outline-none border-b border-dashed border-gray-400 min-w-[200px]">(ADICIONAR NOME)</span></div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> <span contenteditable="true" class="outline-none border-b border-dashed border-gray-400 min-w-[200px]">(ADICIONAR DESCRIÇÃO)</span></div>
             </div>
         </div>
 
@@ -286,10 +286,10 @@
             <div class="box-header">
                 2. Detalhes Construtivos. <i class="fa-regular fa-pen-to-square"></i>
             </div>
-            <div class="box-content box-2-content">
-                <div class="btn-plus b2-img"><i class="fa-regular fa-circle-plus"></i> IMAGEM</div>
-                <div class="btn-plus b2-sec"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
-                <div class="btn-plus b2-txt"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            <div class="box-content box-2-content" id="box2-container">
+                <div class="btn-plus b2-img" onclick="addImage(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> IMAGEM</div>
+                <div class="btn-plus b2-sec" onclick="addSection(this.parentElement, true)"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-plus b2-txt" onclick="addText(this.parentElement, true)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
         </div>
 
@@ -298,12 +298,12 @@
             <div class="box-header" style="background-color: #a8a8a8;">
                 3. Lista de Materiais e Acabamentos. <i class="fa-regular fa-pen-to-square"></i>
             </div>
-            <div class="box-content box-3-content">
-                <div class="b3-top">
-                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            <div class="box-content box-3-content" id="box3-container">
+                <div class="b3-top" id="box3-top">
+                    <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                    <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
                 </div>
-                <div class="btn-plus b3-bot"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-plus b3-bot" onclick="addSection(document.getElementById('box3-container'), true)"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -312,9 +312,9 @@
             <div class="paleta-side">
                 <span>Paleta de Cores</span>
             </div>
-            <div class="paleta-main">
-                <div class="btn-plus mb-3"><i class="fa-regular fa-circle-plus"></i> COR</div>
-                <div class="paleta-bottom-text">Cores Pastel Variadas</div>
+            <div class="paleta-main" id="paleta-container">
+                <div class="btn-plus mb-3" onclick="addColor(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> COR</div>
+                <div class="paleta-bottom-text" contenteditable="true">Cores Pastel Variadas</div>
             </div>
         </div>
 
@@ -323,6 +323,69 @@
 </div>
 
 <script>
+    function addText(container, absolute = false) {
+        const div = document.createElement('div');
+        div.contentEditable = "true";
+        div.className = "outline-none border border-dashed border-gray-400 p-2 min-w-[150px] text-sm text-gray-700 bg-gray-50 mt-2";
+        div.innerText = "Clique para editar...";
+        if(absolute) {
+            div.style.position = "absolute";
+            div.style.left = "25px";
+            div.style.bottom = "60px";
+            div.style.zIndex = "10";
+        }
+        container.appendChild(div);
+    }
+
+    function addSection(container, absolute = false) {
+        const div = document.createElement('div');
+        div.contentEditable = "true";
+        div.className = "outline-none border-2 border-gray-500 p-2 min-w-[150px] text-sm font-bold bg-white mt-2 text-center";
+        div.innerText = "NOVA SECÇÃO";
+        if(absolute) {
+            div.style.position = "absolute";
+            div.style.right = "25px";
+            div.style.top = "50%";
+            div.style.transform = "translateY(-50%)";
+            div.style.zIndex = "10";
+        }
+        container.appendChild(div);
+    }
+
+    function addIcon(container) {
+        const div = document.createElement('div');
+        div.className = "w-[40px] h-[40px] border-2 border-dashed border-gray-500 rounded-full flex items-center justify-center text-xs text-gray-500 cursor-pointer bg-white mt-2";
+        div.innerText = "img";
+        div.onclick = () => {
+            const url = prompt("URL do ícone ou emoji:");
+            if(url) div.innerHTML = url.startsWith('http') ? `<img src="${url}" class="w-full h-full object-contain rounded-full">` : url;
+        };
+        container.appendChild(div);
+    }
+
+    function addImage(container) {
+        const div = document.createElement('div');
+        div.className = "w-[120px] h-[80px] border-2 border-dashed border-gray-500 flex items-center justify-center text-xs text-gray-500 cursor-pointer bg-gray-50 absolute top-[60px] left-[25px] z-10";
+        div.innerText = "+ Inserir Imagem";
+        div.onclick = () => {
+            const url = prompt("URL da imagem:");
+            if(url) div.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+        };
+        container.appendChild(div);
+    }
+
+    function addColor(container) {
+        const div = document.createElement('div');
+        div.className = "w-[30px] h-[30px] rounded-full border-2 border-gray-300 cursor-pointer mt-1";
+        div.style.backgroundColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+        div.onclick = () => {
+            const col = prompt("Cor HEX (ex: #ff0000):");
+            if(col) div.style.backgroundColor = col;
+        };
+        // insert before the text
+        container.insertBefore(div, container.lastElementChild);
+    }
+
     function handleUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
