@@ -338,18 +338,40 @@
     }
 
     function addSection(container, absolute = false) {
-        const div = document.createElement('div');
-        div.contentEditable = "true";
-        div.className = "outline-none border-2 border-gray-500 p-2 min-w-[150px] text-sm font-bold bg-white mt-2 text-center";
-        div.innerText = "NOVA SECÇÃO";
+        const wrapper = document.createElement('div');
+        wrapper.className = "border-2 border-gray-500 bg-white p-4 mt-2 relative min-w-[200px] flex flex-col gap-2";
         if(absolute) {
-            div.style.position = "absolute";
-            div.style.right = "25px";
-            div.style.top = "50%";
-            div.style.transform = "translateY(-50%)";
-            div.style.zIndex = "10";
+            wrapper.style.position = "absolute";
+            wrapper.style.right = "25px";
+            wrapper.style.top = "50%";
+            wrapper.style.transform = "translateY(-50%)";
+            wrapper.style.zIndex = "10";
         }
-        container.appendChild(div);
+        
+        const title = document.createElement('div');
+        title.contentEditable = "true";
+        title.className = "font-bold text-sm outline-none text-center mb-2";
+        title.innerText = "NOVA SECÇÃO";
+        wrapper.appendChild(title);
+
+        const actions = document.createElement('div');
+        actions.className = "flex gap-4 justify-center";
+        
+        const btnImg = document.createElement('div');
+        btnImg.className = "btn-plus text-xs";
+        btnImg.innerHTML = '<i class="fa-regular fa-circle-plus" style="font-size:16px;"></i> IMAGEM';
+        btnImg.onclick = () => addImage(wrapper);
+
+        const btnTxt = document.createElement('div');
+        btnTxt.className = "btn-plus text-xs";
+        btnTxt.innerHTML = '<i class="fa-regular fa-circle-plus" style="font-size:16px;"></i> TEXTO';
+        btnTxt.onclick = () => addText(wrapper);
+
+        actions.appendChild(btnImg);
+        actions.appendChild(btnTxt);
+        wrapper.appendChild(actions);
+
+        container.appendChild(wrapper);
     }
 
     function addIcon(container) {
@@ -403,7 +425,7 @@
             const reader = new FileReader();
             reader.onload = async function(e) {
                 const base64Image = e.target.result;
-                const promptText = "Converter foto num blueprint desenho técnico CAD 2x2. Fundo branco, cotas em centímetros. Referência: usar proporções realistas do objeto.";
+                const promptText = "Converter foto num blueprint desenho técnico CAD 2x2. Fundo branco, cotas em centímetros.";
 
                 try {
                     const response = await fetch('http://localhost:18790/generate', {

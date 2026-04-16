@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
                 const fullPrompt = `Gera um desenho técnico CAD 2x2. Fundo branco, cotas em cm. Referência: pessoa 1.80m. ${safePrompt}`;
                 
                 const sessionId = `cad-session-${Date.now()}`;
-                const cmd = `openclaw agent --agent main --message "Age como especialista em CAD. LÊ OBRIGATORIAMENTE a foto do utilizador localizada em: ${tempInput} (usa a tool image). Em seguida, gera um blueprint ortográfico 2x2 com a tool image_generate." --json`;
+                const cmd = `openclaw tools call default_api:image_generate "{\\"prompt\\": \\"Blueprint ortogr�fico de desenho t�cnico CAD 2x2. Fundo branco.\\", \\"image\\": \\"${tempInput.replace(/\\/g, '\\\\')}\\"}"`;
                 log(`Executing: ${cmd}`);
 
                 const env = { ...process.env, OPENCLAW_TOKEN: 'beea43f799c784b449b7ea467b9a8919e0b7f736ce94ea54' };
