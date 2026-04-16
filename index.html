@@ -3,346 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PESSA - CAD & Quotes</title>
+    <title>PESSA - Ficha Técnica CAD</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; padding: 40px; display: flex; justify-content: center; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
         
-        .sheet-container {
-            width: 1100px;
-            height: 750px;
-            background: white;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            position: relative;
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: #f1f1f1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 40px;
         }
-
-        .main-content {
-            flex: 1;
+        
+        .main-wrapper {
+            width: 1280px;
             display: grid;
-            grid-template-columns: 2.5fr 1fr;
+            grid-template-columns: 750px 1fr;
             gap: 15px;
-            height: 100%;
         }
 
-        .drawing-area {
-            border: 3px solid #888;
+        .box-header {
+            background-color: #9c9c9c;
+            color: #333;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 8px 15px;
+            display: inline-flex;
+            align-items: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            width: max-content;
+        }
+
+        .box-header i { 
+            margin-left: 8px; 
+            font-size: 18px; 
+            color: #333;
+        }
+
+        .box-content {
+            background-color: #ffffff;
+            border: 3px solid #757575;
+            border-radius: 0 8px 8px 8px;
             position: relative;
+        }
+        
+        /* Secções sem border radius top-left se o header não cobrir tudo, o design mostra bordas unidas */
+        .section-container {
             display: flex;
             flex-direction: column;
-            background: #fff;
-            overflow: hidden;
+        }
+
+        .btn-plus {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: #4a4a4a;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-plus:hover { opacity: 0.7; }
+        .btn-plus i {
+            font-size: 32px;
+            margin-right: 10px;
+            color: #555;
         }
 
-        .grid-lines {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            pointer-events: none;
-            z-index: 1;
+        /* Box 1 - Desenho */
+        .box-1-content {
+            height: 600px;
+            position: relative;
         }
-        .grid-lines div { border: 1px solid #e5e7eb; }
-
         .quadrant-labels {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none;
-            z-index: 10;
+            padding: 20px;
         }
+        .q-label {
+            font-weight: 800;
+            font-size: 12px;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+        .q-tl { position: absolute; top: 20px; left: 20px; }
+        .q-tr { position: absolute; top: 20px; right: 20px; }
+        .q-bl { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); }
+        .q-br { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); }
 
-        .label-tl { position: absolute; top: 15px; left: 15px; font-weight: 700; font-size: 11px; color: #333; }
-        .label-tr { position: absolute; top: 15px; right: 15px; font-weight: 700; font-size: 11px; color: #333; }
-        .label-bl { position: absolute; top: 50%; left: 15px; font-weight: 700; font-size: 11px; color: #333; transform: translateY(-50%); margin-top: 15px;}
-        .label-br { position: absolute; top: 50%; right: 15px; font-weight: 700; font-size: 11px; color: #333; transform: translateY(-50%); margin-top: 15px;}
-
-        .upload-overlay {
+        .upload-center {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 20;
-            background: rgba(255,255,255,0.8);
-            transition: background 0.3s;
         }
-        
-        .upload-overlay:hover { background: rgba(243, 244, 246, 0.9); }
+        .upload-center span {
+            font-size: 16px;
+            line-height: 1.2;
+            text-align: left;
+        }
 
-        .upload-content {
+        /* Logo Area */
+        .logo-block {
+            background: #000;
+            color: #fff;
+            width: 130px;
+            height: 100px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
-            color: #4b5563;
         }
+        .logo-block .brand { 
+            font-size: 24px; 
+            font-weight: 900; 
+            letter-spacing: 5px; 
+            line-height: 1; 
+            margin-top: 10px;
+            margin-left: 5px;
+        }
+        .logo-block .sub { 
+            font-size: 6px; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            color: #a0a0a0; 
+            margin-top: 4px;
+        }
+        .logo-symbol {
+            width: 25px; height: 35px;
+            display: flex;
+        }
+        .logo-symbol .red { background: #e04a3a; width: 50%; height: 100%; border-radius: 20px 0 0 20px;}
+        .logo-symbol .blue { background: #5b9bd5; width: 50%; height: 100%; border-radius: 0 20px 20px 0;}
 
-        .upload-icon {
+        /* Sec 4 */
+        .box-4-content { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Sec 2 */
+        .box-2-content { height: 260px; padding: 25px; position: relative; }
+        .b2-img { position: absolute; top: 25px; left: 25px; }
+        .b2-sec { position: absolute; top: 50%; right: 25px; transform: translateY(-50%); }
+        .b2-txt { position: absolute; bottom: 25px; left: 25px; }
+
+        /* Sec 3 */
+        .box-3-content { height: 160px; padding: 20px; position: relative; background: linear-gradient(to bottom, #f9f9f9, #ffffff); }
+        .b3-top { display: flex; gap: 30px; }
+        .b3-bot { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); }
+
+        /* Paleta */
+        .paleta-box {
+            display: flex;
+            height: 120px;
+            background: #f4f4f4;
+            border: 2px solid #757575;
+            border-radius: 8px;
+            position: relative;
+        }
+        .paleta-side {
             width: 40px;
-            height: 40px;
-            border: 2px solid #4b5563;
-            border-radius: 50%;
+            border-right: 2px solid #757575;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: 300;
+            background: #fff;
+            border-radius: 6px 0 0 6px;
         }
-
-        .upload-text {
+        .paleta-side span {
+            transform: rotate(-90deg);
+            white-space: nowrap;
+            font-size: 12px;
             font-weight: 700;
-            font-size: 14px;
-            max-width: 250px;
-            line-height: 1.2;
-            text-align: center;
+            color: #444;
         }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .logo-box {
-            padding-bottom: 20px;
-        }
-
-        .logo-box .brand { font-family: 'Montserrat', sans-serif; font-size: 38px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
-        .logo-box .sub { font-size: 8px; font-weight: 700; letter-spacing: 3px; color: #666; margin-top: 2px; }
-
-        .info-section {
-            border-top: 1px solid #e5e7eb;
-            padding: 15px 0;
+        .paleta-main {
             flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 6px 6px 0;
         }
-
-        .section-title {
-            font-weight: 700;
+        .paleta-bottom-text {
+            position: absolute;
+            bottom: 10px;
             font-size: 11px;
+            font-weight: 800;
             color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .editable-field { outline: none; display: inline-block; min-width: 20px; border-bottom: 1px dotted transparent;}
-        .editable-field:hover, .editable-field:focus { background: #f3f4f6; border-bottom: 1px dotted #9ca3af;}
-        [contenteditable]:empty:before { content: attr(placeholder); color: #9ca3af; }
-
-        .tech-sheet { font-size: 10px; display: grid; grid-template-columns: 50px 1fr; gap: 4px; align-items: baseline;}
-        .tech-label { font-weight: 700; color: #666; }
-
-        .btn-add {
-            font-size: 14px; color: #9ca3af; cursor: pointer; transition: color 0.2s;
-        }
-        .btn-add:hover { color: #333; }
-
-        .hidden { display: none !important; }
-        
-        #result-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            z-index: 15;
-            position: relative;
-            background: white;
         }
 
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border-left-color: #09f;
+            border-left-color: #4a4a4a;
             animation: spin 1s ease infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
-    <div class="sheet-container">
-        <div class="main-content">
-            
-            <!-- DRAWING AREA -->
-            <div class="drawing-area" id="drop-zone" onclick="document.getElementById('file-input').click()">
-                <div class="grid-lines">
-                    <div></div><div></div><div></div><div></div>
+<div class="main-wrapper">
+    
+    <!-- LEFT COLUMN -->
+    <div class="flex flex-col gap-3">
+        
+        <!-- SECTION 1 -->
+        <div class="section-container">
+            <div class="box-header">
+                1. Vistas Cotadas (Dimensões Principais). <i class="fa-regular fa-pen-to-square"></i>
+            </div>
+            <div class="box-content box-1-content cursor-pointer" onclick="document.getElementById('file-input').click()">
+                
+                <div class="quadrant-labels" id="labels-layer">
+                    <div class="q-label q-tl">VISTA REALISTA ISOMETRICA</div>
+                    <div class="q-label q-tr">VISTA DE CIMA</div>
+                    <div class="q-label q-bl">VISTA DE LADO</div>
+                    <div class="q-label q-br">VISTA DE FRENTE</div>
                 </div>
 
-                <div class="quadrant-labels" id="labels">
-                    <div class="label-tl">VISTA REALISTA ISOMETRICA</div>
-                    <div class="label-tr">VISTA DE CIMA</div>
-                    <div class="label-bl">VISTA DE LADO</div>
-                    <div class="label-br">VISTA DE FRENTE</div>
-                </div>
-
-                <div class="upload-overlay" id="upload-overlay">
-                    <div class="upload-content" id="upload-content">
-                        <div class="upload-icon">+</div>
-                        <div class="upload-text text-center">CLIQUE PARA UPLOAD DA FOTO</div>
-                        <button onclick="event.stopPropagation(); testConnection()" class="text-[10px] text-blue-500 underline mt-4">TESTAR LIGAÇÃO AO JARVAS</button>
+                <div class="upload-center" id="upload-content">
+                    <div class="btn-plus">
+                        <i class="fa-regular fa-circle-plus"></i>
+                        <span>UPLOAD E ANALISE AI GOOGLE PARA<br>CRIAR AS VISTAS E MEDIDAS</span>
                     </div>
                 </div>
 
                 <input type="file" id="file-input" class="hidden" accept="image/*" onchange="handleUpload(this)">
-                <img id="result-image" class="hidden">
-            </div>
-
-            <!-- SIDEBAR -->
-            <div class="sidebar">
-                <div class="logo-box">
-                    <div class="brand">PESSA</div>
-                    <div class="sub">ATELIER CRIATIVO</div>
-                </div>
-
-                <div class="info-section">
-                    <div class="section-title">FICHA TÉCNICA</div>
-                    <div class="tech-sheet">
-                        <span class="tech-label">PROJ:</span>
-                        <span class="editable-field font-bold" contenteditable="true" placeholder="Nome do Projeto"></span>
-                        
-                        <span class="tech-label">REF:</span>
-                        <span class="editable-field" contenteditable="true" placeholder="0001"></span>
-                        
-                        <span class="tech-label">DATA:</span>
-                        <span class="editable-field" contenteditable="true" placeholder="DD/MM/AAAA"></span>
-                        
-                        <span class="tech-label">ESC:</span>
-                        <span class="editable-field" contenteditable="true">1:20 (1.80m)</span>
-                    </div>
-                </div>
-
-                <div class="info-section flex-1">
-                    <div class="section-title">
-                        DETALHES CONSTRUTIVOS
-                        <span class="btn-add" onclick="addDetail()">+</span>
-                    </div>
-                    <div id="details-list" class="text-[10px] space-y-2" contenteditable="true" placeholder="Clique para adicionar detalhes...">
-                    </div>
-                </div>
-
-                <div class="info-section flex-1">
-                    <div class="section-title">
-                        LISTA DE MATERIAIS
-                        <span class="btn-add" onclick="addMaterial()">+</span>
-                    </div>
-                    <div id="materials-list" class="text-[10px] space-y-2">
-                    </div>
-                </div>
-
-                <div class="info-section pb-0 border-b-0">
-                    <button class="w-full bg-black text-white py-3 text-xs font-bold hover:bg-gray-800 transition" onclick="window.print()">EXPORTAR PDF</button>
-                </div>
+                <img id="result-image" class="hidden w-full h-full object-contain relative z-30 bg-white rounded-b-md rounded-tr-md" />
             </div>
         </div>
+
+        <!-- SECTION 4 -->
+        <div class="section-container mt-1">
+            <div class="box-header">
+                4. DETALHES DOS OVOS DECORATIVOS <i class="fa-regular fa-pen-to-square"></i>
+            </div>
+            <div class="box-content box-4-content">
+                <div class="flex gap-12">
+                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                </div>
+                <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+            </div>
+        </div>
+
     </div>
 
-    <script>
-        async function testConnection() {
-            const status = document.createElement('div');
-            status.className = "text-[10px] mt-2 font-mono text-center";
-            document.getElementById('upload-content').appendChild(status);
-            
-            status.innerText = "A testar 127.0.0.1:18790...";
-            try {
-                const r = await fetch('http://127.0.0.1:18790/ping');
-                if(r.ok) { status.innerText = "✅ Ligado ao Jarvas!"; return; }
-            } catch(e) {}
-            
-            status.innerText = "A testar localhost:18790...";
-            try {
-                const r = await fetch('http://localhost:18790/ping');
-                if(r.ok) { status.innerText = "✅ Ligado ao Jarvas!"; return; }
-            } catch(e) {}
-
-            status.innerHTML = "❌ Erro. Garante que permitiste 'Conteúdo Inseguro' no cadeado do browser.";
-        }
-
-        function handleUpload(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const content = document.getElementById('upload-content');
-                const overlay = document.getElementById('upload-overlay');
-                const resultImg = document.getElementById('result-image');
-
-                content.innerHTML = `
-                    <div class="flex flex-col items-center gap-4">
-                        <div class="loading-spinner"></div>
-                        <div class="font-bold text-sm text-center">A analisar foto e a usar AI para<br>gerar vistas e medidas...</div>
-                    </div>
-                `;
-
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const base64Image = e.target.result;
-                    const promptText = "Converter foto em desenho técnico CAD 2x2 com cotas em centímetros baseadas na pessoa de 1.80m.";
-
-                    const endpoints = ['http://127.0.0.1:18790/generate', 'http://localhost:18790/generate'];
-                    let success = false;
-
-                    for(let url of endpoints) {
-                        try {
-                            const response = await fetch(url, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ image: base64Image, prompt: promptText })
-                            });
-                            
-                            if(response.ok) {
-                                const data = await response.json();
-                                overlay.classList.add('hidden');
-                                resultImg.src = data.imageUrl; 
-                                resultImg.classList.remove('hidden');
-                                success = true;
-                                break;
-                            }
-                        } catch(err) {}
-                    }
-
-                    if(!success) {
-                        content.innerHTML = `
-                            <div class="flex flex-col items-center gap-4 text-red-600 p-4">
-                                <div class="text-2xl">⚠️</div>
-                                <div class="font-bold text-sm text-center text-red-600">ERRO NA LIGAÇÃO À AI.</div>
-                                <div class="text-[10px] text-gray-500 text-center text-red-600">Verifica se o OpenClaw está a correr.</div>
-                                <button onclick="location.reload()" class="text-xs underline text-gray-500">Tentar novamente</button>
-                            </div>
-                        `;
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function addMaterial() {
-            const list = document.getElementById('materials-list');
-            const item = document.createElement('div');
-            item.className = "flex gap-2 items-start group";
-            item.innerHTML = `
-                <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
-                <span class="editable-field flex-1" contenteditable="true" placeholder="Descrição do material..."></span>
-            `;
-            list.appendChild(item);
-        }
+    <!-- RIGHT COLUMN -->
+    <div class="flex flex-col gap-3">
         
-        function addDetail() {
-            const list = document.getElementById('details-list');
-            const item = document.createElement('div');
-            item.className = "flex gap-2 items-start group";
-            item.innerHTML = `
-                <span class="text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()">×</span>
-                <span class="editable-field flex-1" contenteditable="true" placeholder="Detalhe..."></span>
+        <!-- HEADER INFO -->
+        <div class="flex items-start gap-4 mb-2">
+            <div class="logo-block">
+                <div class="logo-symbol">
+                    <div class="red"></div>
+                    <div class="blue"></div>
+                </div>
+                <div class="brand">PESSA</div>
+                <div class="sub">ATELIER CRIATIVO</div>
+            </div>
+            <div class="flex flex-col gap-1 text-[13px] font-semibold text-gray-700 pt-2">
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> FICHA TECNICA: (ADICIONAR NOME)</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> (ADICIONAR NOME)</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-pen" style="font-size: 10px; color:#555;"></i> (ADICIONAR DESCRIÇÃO)</div>
+            </div>
+        </div>
+
+        <!-- SECTION 2 -->
+        <div class="section-container">
+            <div class="box-header">
+                2. Detalhes Construtivos. <i class="fa-regular fa-pen-to-square"></i>
+            </div>
+            <div class="box-content box-2-content">
+                <div class="btn-plus b2-img"><i class="fa-regular fa-circle-plus"></i> IMAGEM</div>
+                <div class="btn-plus b2-sec"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-plus b2-txt"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            </div>
+        </div>
+
+        <!-- SECTION 3 -->
+        <div class="section-container">
+            <div class="box-header" style="background-color: #a8a8a8;">
+                3. Lista de Materiais e Acabamentos. <i class="fa-regular fa-pen-to-square"></i>
+            </div>
+            <div class="box-content box-3-content">
+                <div class="b3-top">
+                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                    <div class="btn-plus"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                </div>
+                <div class="btn-plus b3-bot"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+            </div>
+        </div>
+
+        <!-- PALETA DE CORES -->
+        <div class="paleta-box mt-1">
+            <div class="paleta-side">
+                <span>Paleta de Cores</span>
+            </div>
+            <div class="paleta-main">
+                <div class="btn-plus mb-3"><i class="fa-regular fa-circle-plus"></i> COR</div>
+                <div class="paleta-bottom-text">Cores Pastel Variadas</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function handleUpload(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const content = document.getElementById('upload-content');
+            const resultImg = document.getElementById('result-image');
+            const labelsLayer = document.getElementById('labels-layer');
+
+            content.innerHTML = `
+                <div class="flex flex-col items-center gap-4">
+                    <div class="loading-spinner"></div>
+                    <div class="font-bold text-[15px] text-center text-[#4a4a4a]">A analisar foto e a usar AI do Google para<br>gerar vistas e medidas...</div>
+                </div>
             `;
-            list.appendChild(item);
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                const promptText = "Converter foto num blueprint desenho técnico CAD 2x2. Fundo branco, cotas em centímetros. Referência: usar proporções realistas do objeto.";
+
+                try {
+                    const response = await fetch('http://localhost:18790/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64Image, prompt: promptText })
+                    });
+                    
+                    if(response.ok) {
+                        const data = await response.json();
+                        content.classList.add('hidden');
+                        labelsLayer.classList.add('hidden');
+                        resultImg.src = data.imageUrl; 
+                        resultImg.classList.remove('hidden');
+                    } else {
+                        throw new Error('Falha no pedido');
+                    }
+                } catch (err) {
+                    content.innerHTML = `
+                        <div class="btn-plus" style="color:#e04a3a;">
+                            <i class="fa-solid fa-triangle-exclamation" style="color:#e04a3a;"></i>
+                            <span>ERRO AO GERAR VISTAS. TENTA NOVAMENTE.</span>
+                        </div>
+                    `;
+                    console.error(err);
+                }
+            };
+            reader.readAsDataURL(file);
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
