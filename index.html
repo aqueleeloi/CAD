@@ -222,7 +222,7 @@
         <!-- SECTION 1 -->
         <div class="section-container">
             <div class="box-header">
-                1. Vistas Cotadas (Dimensões Principais). <i class="fa-regular fa-pen-to-square"></i>
+                <span class="editable-title" style="display: inline-block;">1. Vistas Cotadas (Dimensões Principais).</span> <i class="fa-regular fa-pen-to-square"></i>
             </div>
             <div class="box-content box-1-content cursor-pointer" onclick="document.getElementById('file-input').click()">
                 
@@ -453,6 +453,24 @@
             reader.readAsDataURL(file);
         }
     }
+
+    // Funcionalidade para editar títuloss
+    // Este código agora está garantido para correr depois de todos os elementos estarem no DOM.
+    document.querySelectorAll('.box-header .fa-pen-to-square').forEach(icon => {
+        icon.style.cursor = 'pointer';
+        icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const headerDiv = e.target.closest('.box-header');
+            const titleSpan = headerDiv.querySelector('.editable-title'); // Target the new span
+            if (titleSpan) {
+                let currentText = titleSpan.textContent.trim();
+                let newText = prompt("Editar título:", currentText);
+                if (newText !== null && newText.trim() !== "") {
+                    titleSpan.textContent = newText;
+                }
+            }
+        });
+    });
 </script>
 
 </body>
