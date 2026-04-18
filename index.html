@@ -368,7 +368,58 @@
 
 </div>
 
+<!-- Modal de Ícones -->
+<div id="icon-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-4 w-[400px] max-w-[90%] shadow-xl">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="font-bold text-gray-700">Escolher Ícone</h3>
+            <button onclick="closeIconModal()" class="text-gray-500 hover:text-gray-800 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="grid grid-cols-6 gap-3 max-h-[300px] overflow-y-auto p-1" id="icon-grid">
+            <!-- Icons injected via JS -->
+        </div>
+    </div>
+</div>
+
 <script>
+    const faIcons = [
+        "fa-solid fa-check", "fa-solid fa-xmark", "fa-solid fa-arrow-right", "fa-solid fa-circle", "fa-solid fa-square", 
+        "fa-solid fa-star", "fa-solid fa-heart", "fa-solid fa-house", "fa-solid fa-user", "fa-solid fa-phone",
+        "fa-solid fa-envelope", "fa-solid fa-location-dot", "fa-solid fa-camera", "fa-solid fa-image", "fa-solid fa-video",
+        "fa-solid fa-music", "fa-solid fa-bell", "fa-solid fa-gear", "fa-solid fa-wrench", "fa-solid fa-hammer",
+        "fa-solid fa-pen", "fa-solid fa-pencil", "fa-solid fa-trash", "fa-solid fa-box", "fa-solid fa-truck",
+        "fa-solid fa-bolt", "fa-solid fa-plug", "fa-solid fa-lightbulb", "fa-solid fa-power-off", "fa-solid fa-battery-full",
+        "fa-solid fa-magnifying-glass", "fa-solid fa-tag", "fa-solid fa-cart-shopping", "fa-solid fa-credit-card", "fa-solid fa-wallet",
+        "fa-solid fa-clock", "fa-solid fa-calendar", "fa-solid fa-triangle-exclamation", "fa-solid fa-circle-info", "fa-solid fa-circle-check",
+        "fa-solid fa-droplet", "fa-solid fa-fire", "fa-solid fa-leaf", "fa-solid fa-wind", "fa-solid fa-snowflake",
+        "fa-solid fa-sun", "fa-solid fa-moon", "fa-solid fa-cloud", "fa-solid fa-umbrella", "fa-solid fa-tree", "fa-solid fa-ruler", "fa-solid fa-scissors"
+    ];
+
+    let currentIconTarget = null;
+
+    function openIconModal(targetDiv) {
+        currentIconTarget = targetDiv;
+        const grid = document.getElementById('icon-grid');
+        grid.innerHTML = '';
+        faIcons.forEach(iconClass => {
+            const btn = document.createElement('div');
+            btn.className = "flex items-center justify-center p-2 border rounded hover:bg-gray-100 cursor-pointer text-xl text-gray-700 transition-colors";
+            btn.innerHTML = `<i class="${iconClass}"></i>`;
+            btn.onclick = () => {
+                targetDiv.innerHTML = `<i class="${iconClass} text-[26px] text-gray-700"></i>`;
+                targetDiv.className = "w-[40px] h-[40px] flex items-center justify-center mt-2 cursor-pointer hover:opacity-70";
+                closeIconModal();
+            };
+            grid.appendChild(btn);
+        });
+        document.getElementById('icon-modal').classList.remove('hidden');
+    }
+
+    function closeIconModal() {
+        document.getElementById('icon-modal').classList.add('hidden');
+        currentIconTarget = null;
+    }
+
     function addText(container, absolute = false) {
         const div = document.createElement('div');
         div.contentEditable = "true";
@@ -479,13 +530,15 @@
 
     function addIcon(container) {
         const div = document.createElement('div');
-        div.className = "w-[40px] h-[40px] border-2 border-dashed border-gray-500 rounded-full flex items-center justify-center text-xs text-gray-500 cursor-pointer bg-white mt-2";
-        div.innerText = "img";
+        div.className = "w-[40px] h-[40px] border-2 border-dashed border-gray-500 rounded-full flex items-center justify-center text-xs text-gray-500 cursor-pointer bg-white mt-2 hover:bg-gray-50";
+        div.innerHTML = '<i class="fa-solid fa-plus"></i>';
         div.onclick = () => {
-            const url = prompt("URL do ícone ou emoji:");
-            if(url) div.innerHTML = url.startsWith('http') ? `<img src="${url}" class="w-full h-full object-contain rounded-full">` : url;
+            openIconModal(div);
         };
         container.appendChild(div);
+        
+        // Abre o popup automaticamente ao criar para poupar um clique
+        openIconModal(div);
     }
 
     function addImage(container) {
