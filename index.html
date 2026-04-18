@@ -80,21 +80,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 800; /* Font mais grossa (bold) para destacar o texto */
             font-size: 13px;
-            color: #333;
+            color: #4a4a4a;
             gap: 5px;
             cursor: pointer;
             transition: opacity 0.2s;
             padding: 10px 15px;
-            border: 2px solid #ccc; /* Adiciona borda padrão */
-            border-radius: 8px; /* Cantos arredondados */
-            background-color: #f0f0f0; /* Fundo suave */
+            border: none; /* Removida a borda em caixa */
+            background-color: transparent; /* Fundo transparente */
         }
-        .btn-add-item:hover { opacity: 0.8; background-color: #e0e0e0; }
+        .btn-add-item:hover { opacity: 0.7; }
         .btn-add-item i {
-            font-size: 24px;
-            color: #555;
+            font-size: 32px; /* Ícone bem maior, semelhante ao botão SECÇÃO */
+            color: #4a4a4a;
         }
 
         .btn-add-section {
@@ -332,8 +331,8 @@
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">2. Detalhes Construtivos.</span>
             </div>
             <div class="box-content box-2-content">
-                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> ICON</div>
+                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
                 <div class="btn-add-section" onclick="addSubsection(this, 'box-2-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
@@ -346,8 +345,8 @@
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">3. Lista de Materiais e Acabamentos.</span>
             </div>
             <div class="box-content box-3-content">
-                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> ICON</div>
+                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
                 <div class="btn-add-section" onclick="addSubsection(this, 'box-3-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
@@ -411,12 +410,12 @@
         const iconBtn = document.createElement('div');
         iconBtn.className = "btn-add-item";
         iconBtn.onclick = function() { addIcon(this.parentElement); };
-        iconBtn.innerHTML = '<i class="fa-regular fa-circle-plus"></i> ICON';
+        iconBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i> ICON';
         
         const textBtn = document.createElement('div');
         textBtn.className = "btn-add-item";
         textBtn.onclick = function() { addText(this.parentElement); };
-        textBtn.innerHTML = '<i class="fa-regular fa-circle-plus"></i> TEXTO';
+        textBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i> TEXTO';
 
         const deleteBtn = document.createElement('div');
         deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
