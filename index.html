@@ -315,7 +315,7 @@
                 <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-add-item" onclick="addSection(document.getElementById('box2-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-item" onclick="addSubsection(this, 'box-2-content')"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -329,7 +329,7 @@
                 <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-add-item" onclick="addSection(document.getElementById('box3-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-item" onclick="addSubsection(this, 'box-3-content')"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -361,6 +361,46 @@
             div.style.zIndex = "10";
         }
         container.appendChild(div);
+    }
+
+    function addSubsection(btnElement, boxClass) {
+        console.log("addSubsection called!", btnElement, boxClass);
+        const container = btnElement.closest('.section-container');
+        const btnContainer = btnElement.closest('.section-add-btn-container');
+        
+        if (!container || !btnContainer) {
+            console.error("Missing container or btnContainer");
+            return;
+        }
+
+        // Find previous box-content to remove bottom border radius
+        const previousBoxes = container.querySelectorAll('.box-content');
+        if(previousBoxes.length > 0) {
+            const lastBox = previousBoxes[previousBoxes.length - 1];
+            lastBox.style.borderBottomLeftRadius = "0";
+            lastBox.style.borderBottomRightRadius = "0";
+        }
+
+        const div = document.createElement('div');
+        div.className = "box-content " + boxClass;
+        div.style.borderTop = "none"; // Evitar borda dupla
+        div.style.borderTopLeftRadius = "0";
+        div.style.borderTopRightRadius = "0";
+        
+        const iconBtn = document.createElement('div');
+        iconBtn.className = "btn-add-item";
+        iconBtn.onclick = function() { addIcon(this.parentElement); };
+        iconBtn.innerHTML = '<i class="fa-regular fa-circle-plus"></i> ICON';
+        
+        const textBtn = document.createElement('div');
+        textBtn.className = "btn-add-item";
+        textBtn.onclick = function() { addText(this.parentElement); };
+        textBtn.innerHTML = '<i class="fa-regular fa-circle-plus"></i> TEXTO';
+        
+        div.appendChild(iconBtn);
+        div.appendChild(textBtn);
+        
+        container.insertBefore(div, btnContainer);
     }
 
     function addSection(container, absolute = false) {
