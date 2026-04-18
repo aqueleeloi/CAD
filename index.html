@@ -75,6 +75,28 @@
             color: #555;
         }
 
+        .btn-add-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            gap: 5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            padding: 10px 15px;
+            border: 2px solid #ccc; /* Adiciona borda padrão */
+            border-radius: 8px; /* Cantos arredondados */
+            background-color: #f0f0f0; /* Fundo suave */
+        }
+        .btn-add-item:hover { opacity: 0.8; background-color: #e0e0e0; }
+        .btn-add-item i {
+            font-size: 24px;
+            color: #555;
+        }
+
         /* Box 1 - Desenho */
         .box-1-content {
             height: 600px;
@@ -288,12 +310,12 @@
             <div class="box-header">
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">2. Detalhes Construtivos.</span>
             </div>
-            <div class="box-content box-2-content" id="box2-container">
-                <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            <div class="box-content box-2-content">
+                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-plus" onclick="addSection(document.getElementById('box2-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-item" onclick="addSection(document.getElementById('box2-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -302,12 +324,12 @@
             <div class="box-header" style="background-color: #a8a8a8;">
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">3. Lista de Materiais e Acabamentos.</span>
             </div>
-            <div class="box-content box-3-content" id="box3-container">
-                <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            <div class="box-content box-3-content">
+                <div class="btn-add-item" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-plus" onclick="addSection(document.getElementById('box3-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-item" onclick="addSection(document.getElementById('box3-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
