@@ -97,6 +97,27 @@
             color: #555;
         }
 
+        .btn-add-section {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: #4a4a4a;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            padding: 5px 10px;
+            border: none;
+            background: transparent;
+        }
+        .btn-add-section:hover { opacity: 0.7; }
+        .btn-add-section i {
+            font-size: 32px;
+            color: #4a4a4a;
+        }
+
         /* Box 1 - Desenho */
         .box-1-content {
             height: 600px;
@@ -282,7 +303,7 @@
                     <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
                     <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
                 </div>
-                <div class="btn-plus" onclick="addSection(document.getElementById('box4-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-section" onclick="addSection(document.getElementById('box4-container'))"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -315,7 +336,7 @@
                 <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-add-item" onclick="addSubsection(this, 'box-2-content')"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-section" onclick="addSubsection(this, 'box-2-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -329,7 +350,7 @@
                 <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
-                <div class="btn-add-item" onclick="addSubsection(this, 'box-3-content')"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-add-section" onclick="addSubsection(this, 'box-3-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
