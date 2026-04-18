@@ -148,16 +148,21 @@
         /* Sec 4 */
         .box-4-content { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Sec 2 */
-        .box-2-content { height: 260px; padding: 25px; position: relative; }
-        .b2-img { position: absolute; top: 25px; left: 25px; }
-        .b2-sec { position: absolute; top: 50%; right: 25px; transform: translateY(-50%); }
-        .b2-txt { position: absolute; bottom: 25px; left: 25px; }
+        /* Sec 2 & 3 Content Layout */
+        .box-2-content, .box-3-content { 
+            padding: 20px; 
+            display: flex; 
+            gap: 30px;
+            background: linear-gradient(to bottom, #f9f9f9, #ffffff);
+            align-items: center;
+        }
 
-        /* Sec 3 */
-        .box-3-content { height: 160px; padding: 20px; position: relative; background: linear-gradient(to bottom, #f9f9f9, #ffffff); }
-        .b3-top { display: flex; gap: 30px; }
-        .b3-bot { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); }
+        .section-add-btn-container {
+            display: flex;
+            justify-content: center;
+            padding-top: 15px;
+            padding-bottom: 5px;
+        }
 
         /* Paleta */
         .paleta-box {
@@ -284,9 +289,11 @@
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">2. Detalhes Construtivos.</span>
             </div>
             <div class="box-content box-2-content" id="box2-container">
-                <div class="btn-plus b2-img" onclick="addImage(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> IMAGEM</div>
-                <div class="btn-plus b2-sec" onclick="addSection(this.parentElement, true)"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
-                <div class="btn-plus b2-txt" onclick="addText(this.parentElement, true)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            </div>
+            <div class="section-add-btn-container">
+                <div class="btn-plus" onclick="addSection(document.getElementById('box2-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
@@ -296,11 +303,11 @@
                 <span class="editable-title" style="display: inline-block;" contenteditable="true">3. Lista de Materiais e Acabamentos.</span>
             </div>
             <div class="box-content box-3-content" id="box3-container">
-                <div class="b3-top" id="box3-top">
-                    <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                    <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
-                </div>
-                <div class="btn-plus b3-bot" onclick="addSection(document.getElementById('box3-container'), true)"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
+                <div class="btn-plus" onclick="addIcon(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
+                <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+            </div>
+            <div class="section-add-btn-container">
+                <div class="btn-plus" onclick="addSection(document.getElementById('box3-container'))"><i class="fa-regular fa-circle-plus"></i> SECÇÃO</div>
             </div>
         </div>
 
