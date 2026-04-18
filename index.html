@@ -222,7 +222,7 @@
         <!-- SECTION 1 -->
         <div class="section-container">
             <div class="box-header">
-                <span class="editable-title" style="display: inline-block;">1. Vistas Cotadas (Dimensões Principais).</span> <i class="fa-regular fa-pen-to-square"></i>
+                <span class="editable-title" style="display: inline-block;" contenteditable="true">1. Vistas Cotadas (Dimensões Principais).</span>
             </div>
             <div class="box-content box-1-content cursor-pointer" onclick="document.getElementById('file-input').click()">
                 
@@ -248,7 +248,7 @@
         <!-- SECTION 4 -->
         <div class="section-container mt-1">
             <div class="box-header">
-                <span class="editable-title" style="display: inline-block;">4. DETALHES DOS OVOS DECORATIVOS</span> <i class="fa-regular fa-pen-to-square"></i>
+                <span class="editable-title" style="display: inline-block;" contenteditable="true">4. DETALHES DOS OVOS DECORATIVOS</span>
             </div>
             <div class="box-content box-4-content" id="box4-container">
                 <div class="flex gap-12" id="box4-left">
@@ -281,7 +281,7 @@
         <!-- SECTION 2 -->
         <div class="section-container">
             <div class="box-header">
-                <span class="editable-title" style="display: inline-block;">2. Detalhes Construtivos.</span> <i class="fa-regular fa-pen-to-square"></i>
+                <span class="editable-title" style="display: inline-block;" contenteditable="true">2. Detalhes Construtivos.</span>
             </div>
             <div class="box-content box-2-content" id="box2-container">
                 <div class="btn-plus b2-img" onclick="addImage(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> IMAGEM</div>
@@ -293,7 +293,7 @@
         <!-- SECTION 3 -->
         <div class="section-container">
             <div class="box-header" style="background-color: #a8a8a8;">
-                <span class="editable-title" style="display: inline-block;">3. Lista de Materiais e Acabamentos.</span> <i class="fa-regular fa-pen-to-square"></i>
+                <span class="editable-title" style="display: inline-block;" contenteditable="true">3. Lista de Materiais e Acabamentos.</span>
             </div>
             <div class="box-content box-3-content" id="box3-container">
                 <div class="b3-top" id="box3-top">
@@ -456,21 +456,7 @@
 
     // Funcionalidade para editar títuloss
     // Este código agora está garantido para correr depois de todos os elementos estarem no DOM.
-    document.querySelectorAll('.box-header .fa-pen-to-square').forEach(icon => {
-        icon.style.cursor = 'pointer';
-        icon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const headerDiv = e.target.closest('.box-header');
-            const titleSpan = headerDiv.querySelector('.editable-title'); // Target the new span
-            if (titleSpan) {
-                let currentText = titleSpan.textContent.trim();
-                let newText = prompt("Editar título:", currentText);
-                if (newText !== null && newText.trim() !== "") {
-                    titleSpan.textContent = newText;
-                }
-            }
-        });
-    });
+    // A edição direta é feita via contenteditable="true" no HTML, sem necessidade deste JS aqui.
 </script>
 
 </body>
