@@ -396,9 +396,26 @@
         textBtn.className = "btn-add-item";
         textBtn.onclick = function() { addText(this.parentElement); };
         textBtn.innerHTML = '<i class="fa-regular fa-circle-plus"></i> TEXTO';
+
+        const deleteBtn = document.createElement('div');
+        deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        deleteBtn.className = "absolute top-2 right-2 text-red-500 cursor-pointer hover:text-red-700 text-sm";
+        deleteBtn.onclick = function() {
+            const prev = div.previousElementSibling;
+            const next = div.nextElementSibling;
+            
+            // Se for o último bloco antes do botão de adicionar secção, devolve os cantos arredondados ao anterior
+            if (prev && prev.classList.contains('box-content') && next && next.classList.contains('section-add-btn-container')) {
+                prev.style.borderBottomLeftRadius = "8px";
+                prev.style.borderBottomRightRadius = "8px";
+            }
+            
+            div.remove();
+        };
         
         div.appendChild(iconBtn);
         div.appendChild(textBtn);
+        div.appendChild(deleteBtn);
         
         container.insertBefore(div, btnContainer);
     }
