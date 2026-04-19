@@ -434,7 +434,9 @@
         }
 
         const toolbar = document.createElement('div');
-        toolbar.className = "flex gap-2 bg-gray-100 p-1 rounded text-xs items-center border border-gray-200";
+        toolbar.className = "flex gap-2 bg-gray-100 p-1 rounded text-xs items-center border border-gray-200 transition-opacity";
+        toolbar.style.display = 'none'; // hidden by default
+
         // To prevent losing focus when clicking toolbar buttons, use onmousedown preventDefault
         toolbar.innerHTML = `
             <button onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" class="px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 font-bold" title="Negrito">B</button>
@@ -470,10 +472,32 @@
         div.className = "outline-none border border-dashed border-gray-400 p-2 min-w-[150px] text-sm text-gray-700 bg-gray-50 focus:bg-white";
         div.innerText = "Clique para editar...";
 
+        // Show/hide toolbar on focus
+        div.addEventListener('focus', () => {
+            toolbar.style.display = 'flex';
+        });
+
+        wrapper.addEventListener('focusout', (e) => {
+            // Give a small delay to allow the new element to take focus
+            setTimeout(() => {
+                if (!wrapper.contains(document.activeElement)) {
+                    toolbar.style.display = 'none';
+                }
+            }, 100);
+        });
+
+        // Focus inside the wrapper also shows the toolbar (for dropdown/color picker)
+        wrapper.addEventListener('focusin', () => {
+            toolbar.style.display = 'flex';
+        });
+
         wrapper.appendChild(toolbar);
         wrapper.appendChild(div);
         
         container.insertBefore(wrapper, btn.nextSibling);
+
+        // Auto-focus the new text area and show toolbar
+        setTimeout(() => div.focus(), 50);
     }
 
     function addSubsection(btnElement, boxClass) {
