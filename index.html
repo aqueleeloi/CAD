@@ -447,8 +447,23 @@
                 <option value="5">Muito Grande</option>
                 <option value="6">Enorme</option>
             </select>
-            <button onclick="this.parentElement.parentElement.remove(); if(btn.style) btn.style.display='flex';" class="ml-auto px-2 py-1 bg-red-100 text-red-600 border border-red-200 rounded hover:bg-red-200" title="Remover"><i class="fa-solid fa-trash"></i></button>
+            <button class="delete-text-btn ml-auto px-2 py-1 bg-red-100 text-red-600 border border-red-200 rounded hover:bg-red-200" title="Remover"><i class="fa-solid fa-trash"></i></button>
         `;
+
+        const deleteBtn = toolbar.querySelector('.delete-text-btn');
+        deleteBtn.onclick = function() {
+            wrapper.remove();
+            if(btn && btn.style) {
+                // Return to previous display style depending on its class
+                if (btn.classList.contains('btn-plus')) {
+                    btn.style.display = 'flex';
+                } else if (btn.classList.contains('btn-add-item')) {
+                    btn.style.display = 'flex';
+                } else {
+                    btn.style.display = '';
+                }
+            }
+        };
 
         const div = document.createElement('div');
         div.contentEditable = "true";
