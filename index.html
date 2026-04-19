@@ -300,7 +300,7 @@
             <div class="box-content box-4-content" id="box4-container">
                 <div class="flex gap-12" id="box4-left">
                     <div class="btn-plus" onclick="addIcon(this)"><i class="fa-regular fa-circle-plus"></i> ICON</div>
-                    <div class="btn-plus" onclick="addText(this.parentElement)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
+                    <div class="btn-plus" onclick="addText(this)"><i class="fa-regular fa-circle-plus"></i> TEXTO</div>
                 </div>
                 <div class="btn-add-section" onclick="addSection(document.getElementById('box4-container'))"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
             </div>
@@ -332,7 +332,7 @@
             </div>
             <div class="box-content box-2-content">
                 <div class="btn-add-item" onclick="addIcon(this)"><i class="fa-solid fa-circle-plus"></i> ICON</div>
-                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
+                <div class="btn-add-item" onclick="addText(this)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
                 <div class="btn-add-section" onclick="addSubsection(this, 'box-2-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
@@ -346,7 +346,7 @@
             </div>
             <div class="box-content box-3-content">
                 <div class="btn-add-item" onclick="addIcon(this)"><i class="fa-solid fa-circle-plus"></i> ICON</div>
-                <div class="btn-add-item" onclick="addText(this.parentElement)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
+                <div class="btn-add-item" onclick="addText(this)"><i class="fa-solid fa-circle-plus"></i> TEXTO</div>
             </div>
             <div class="section-add-btn-container">
                 <div class="btn-add-section" onclick="addSubsection(this, 'box-3-content')"><i class="fa-solid fa-circle-plus"></i> SECÇÃO</div>
@@ -420,18 +420,45 @@
         currentIconTarget = null;
     }
 
-    function addText(container, absolute = false) {
+    function addText(btn, absolute = false) {
+        const container = btn.parentNode || btn;
+        if(btn.style) btn.style.display = 'none';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = "flex flex-col gap-1 mt-2 w-full";
+        if(absolute) {
+            wrapper.style.position = "absolute";
+            wrapper.style.left = "25px";
+            wrapper.style.bottom = "60px";
+            wrapper.style.zIndex = "10";
+        }
+
+        const toolbar = document.createElement('div');
+        toolbar.className = "flex gap-2 bg-gray-100 p-1 rounded text-xs items-center border border-gray-200";
+        // To prevent losing focus when clicking toolbar buttons, use onmousedown preventDefault
+        toolbar.innerHTML = `
+            <button onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" class="px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 font-bold" title="Negrito">B</button>
+            <input type="color" onchange="document.execCommand('foreColor', false, this.value)" class="w-6 h-6 cursor-pointer rounded border-0 p-0" title="Cor do Texto">
+            <select onchange="document.execCommand('fontSize', false, this.value)" class="px-1 py-1 rounded bg-white border border-gray-300 cursor-pointer text-xs" title="Tamanho do Texto">
+                <option value="1">Muito Pequeno</option>
+                <option value="2">Pequeno</option>
+                <option value="3" selected>Normal</option>
+                <option value="4">Grande</option>
+                <option value="5">Muito Grande</option>
+                <option value="6">Enorme</option>
+            </select>
+            <button onclick="this.parentElement.parentElement.remove(); if(btn.style) btn.style.display='flex';" class="ml-auto px-2 py-1 bg-red-100 text-red-600 border border-red-200 rounded hover:bg-red-200" title="Remover"><i class="fa-solid fa-trash"></i></button>
+        `;
+
         const div = document.createElement('div');
         div.contentEditable = "true";
-        div.className = "outline-none border border-dashed border-gray-400 p-2 min-w-[150px] text-sm text-gray-700 bg-gray-50 mt-2";
+        div.className = "outline-none border border-dashed border-gray-400 p-2 min-w-[150px] text-sm text-gray-700 bg-gray-50 focus:bg-white";
         div.innerText = "Clique para editar...";
-        if(absolute) {
-            div.style.position = "absolute";
-            div.style.left = "25px";
-            div.style.bottom = "60px";
-            div.style.zIndex = "10";
-        }
-        container.appendChild(div);
+
+        wrapper.appendChild(toolbar);
+        wrapper.appendChild(div);
+        
+        container.insertBefore(wrapper, btn.nextSibling);
     }
 
     function addSubsection(btnElement, boxClass) {
@@ -465,7 +492,7 @@
         
         const textBtn = document.createElement('div');
         textBtn.className = "btn-add-item";
-        textBtn.onclick = function() { addText(this.parentElement); };
+        textBtn.onclick = function() { addText(this); };
         textBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i> TEXTO';
 
         const deleteBtn = document.createElement('div');
@@ -519,7 +546,7 @@
         const btnTxt = document.createElement('div');
         btnTxt.className = "btn-plus text-xs";
         btnTxt.innerHTML = '<i class="fa-regular fa-circle-plus" style="font-size:16px;"></i> TEXTO';
-        btnTxt.onclick = () => addText(wrapper);
+        btnTxt.onclick = () => addText(btnTxt);
 
         actions.appendChild(btnImg);
         actions.appendChild(btnTxt);
@@ -612,3 +639,4 @@
 
 </body>
 </html>
+
